@@ -33,6 +33,23 @@ return [
     // Hard bounces tolerated for an address before auto-suppression.
     'hard_bounce_limit' => (int) env('KNS_HARD_BOUNCE_LIMIT', 1),
 
+    /*
+     | The first super admin, used only by SuperAdminSeeder.
+     |
+     | These live here rather than being read with env() inside the seeder, and
+     | the difference is not stylistic: outside a config file, env() returns its
+     | DEFAULT once `config:cache` has run, because Laravel then stops loading
+     | .env at all. A seeder calling env() directly on a cached install
+     | therefore ignored KNS_ADMIN_PASSWORD entirely and hashed the fallback —
+     | silently giving the platform administrator a password from a public
+     | repository while .env appeared to say otherwise.
+     */
+    'admin' => [
+        'name' => env('KNS_ADMIN_NAME', 'KN Softic Admin'),
+        'email' => env('KNS_ADMIN_EMAIL', 'admin@knsoftic.com'),
+        'password' => env('KNS_ADMIN_PASSWORD'),
+    ],
+
     // Master switch for open/click tracking; per-campaign toggles still apply.
     'tracking_enabled' => filter_var(env('KNS_TRACKING_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
 ];
