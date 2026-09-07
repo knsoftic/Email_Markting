@@ -116,6 +116,12 @@ else
     warn "without it every page loads unstyled. See DEPLOY-AAPANEL.md section 6."
 fi
 
+# A leftover `public/hot` makes Laravel serve every asset from the Vite dev
+# server instead of the build — so the site renders with no CSS at all, on a
+# server where that dev server does not exist and never will. The file is
+# written by `npm run dev` and is not always cleaned up when it stops.
+rm -f public/hot
+
 if [ ! -f public/build/manifest.json ]; then
     echo "public/build/manifest.json is missing. The site will not render correctly." >&2
     exit 1
