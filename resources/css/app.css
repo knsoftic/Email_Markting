@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * KN Softic brand palette.
+ * The layout overrides --brand-500/600/700 inline from the admin-saved brand
+ * colour; everything below is the shipped default.
+ */
+@layer base {
+    :root {
+        --brand-50: 239 246 255;
+        --brand-100: 219 234 254;
+        --brand-200: 191 219 254;
+        --brand-300: 147 197 253;
+        --brand-400: 96 165 250;
+        --brand-500: 59 130 246;
+        --brand-600: 29 78 216;
+        --brand-700: 30 64 175;
+        --brand-800: 30 58 138;
+        --brand-900: 23 37 84;
+        --accent-500: 14 165 233;
+        --accent-600: 2 132 199;
+    }
+
+    body {
+        @apply bg-ink-100 text-ink-800 antialiased;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+    /* ------------------------------------------------------------- surfaces */
+    .kn-card {
+        @apply bg-white rounded-xl shadow-card border border-ink-200/70;
+    }
+
+    .kn-card-header {
+        @apply flex items-center justify-between gap-4 px-5 py-4 border-b border-ink-200/70;
+    }
+
+    .kn-card-body {
+        @apply p-5;
+    }
+
+    .kn-stat {
+        @apply bg-white rounded-xl shadow-card border border-ink-200/70 p-5 transition hover:shadow-card-hover;
+    }
+
+    .kn-stat-label {
+        @apply text-xs font-medium uppercase tracking-wide text-ink-500;
+    }
+
+    .kn-stat-value {
+        @apply mt-1 text-2xl font-semibold text-ink-900;
+    }
+
+    /* -------------------------------------------------------------- buttons */
+    .kn-btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold
+               transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+               disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .kn-btn-primary {
+        @apply kn-btn bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-500;
+    }
+
+    .kn-btn-secondary {
+        @apply kn-btn bg-white text-ink-700 border border-ink-300 hover:bg-ink-50 focus-visible:ring-brand-500;
+    }
+
+    .kn-btn-danger {
+        @apply kn-btn bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500;
+    }
+
+    .kn-btn-ghost {
+        @apply kn-btn text-ink-600 hover:bg-ink-100 hover:text-ink-900;
+    }
+
+    .kn-btn-sm {
+        @apply px-3 py-1.5 text-xs;
+    }
+
+    /* --------------------------------------------------------------- forms */
+    .kn-label {
+        @apply block text-sm font-medium text-ink-700 mb-1.5;
+    }
+
+    .kn-input,
+    .kn-select,
+    .kn-textarea {
+        @apply block w-full rounded-lg border-ink-300 text-sm text-ink-900 shadow-sm
+               placeholder:text-ink-400 focus:border-brand-500 focus:ring-brand-500;
+    }
+
+    .kn-checkbox {
+        @apply rounded border-ink-300 text-brand-600 shadow-sm focus:ring-brand-500;
+    }
+
+    .kn-help {
+        @apply mt-1.5 text-xs text-ink-500;
+    }
+
+    .kn-error {
+        @apply mt-1.5 text-xs font-medium text-red-600;
+    }
+
+    /* --------------------------------------------------------------- table */
+    .kn-table {
+        @apply min-w-full divide-y divide-ink-200 text-sm;
+    }
+
+    .kn-table thead th {
+        @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-ink-500 bg-ink-50;
+    }
+
+    .kn-table tbody tr {
+        @apply border-b border-ink-100 last:border-0 hover:bg-ink-50/60;
+    }
+
+    .kn-table tbody td {
+        @apply px-4 py-3 align-middle text-ink-700;
+    }
+
+    /* -------------------------------------------------------------- badges */
+    .kn-badge {
+        @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+    }
+
+    .kn-badge-green { @apply kn-badge bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20; }
+    .kn-badge-gray  { @apply kn-badge bg-ink-100 text-ink-600 ring-1 ring-inset ring-ink-500/20; }
+    .kn-badge-blue  { @apply kn-badge bg-brand-50 text-brand-700 ring-1 ring-inset ring-brand-600/20; }
+    .kn-badge-amber { @apply kn-badge bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20; }
+    .kn-badge-red   { @apply kn-badge bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20; }
+
+    /* ------------------------------------------------------------- sidebar */
+    .kn-nav-link {
+        @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-ink-300
+               transition hover:bg-white/10 hover:text-white;
+    }
+
+    .kn-nav-link-active {
+        @apply bg-white/10 text-white;
+    }
+
+    .kn-nav-section {
+        @apply px-3 pt-5 pb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-500;
+    }
+
+    /* ------------------------------------------------------------ skeleton */
+    .kn-skeleton {
+        @apply relative overflow-hidden rounded bg-ink-200/70;
+    }
+
+    .kn-skeleton::after {
+        @apply absolute inset-0 -translate-x-full animate-shimmer
+               bg-gradient-to-r from-transparent via-white/60 to-transparent;
+        content: '';
+    }
+}
