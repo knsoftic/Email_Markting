@@ -188,16 +188,16 @@
 
 ---
 
-### PHASE 11 — Hardening & Delivery ⬜ *(≈ 8 units)*
+### PHASE 11 — Hardening & Delivery ✅ *(≈ 8 units)*
 
 | # | Task | Units | Status |
 |---|---|---|---|
-| 11.1 | Security pass: policy on every model, mass-assignment audit, upload validation, rate limits, CSP for rendered email HTML | 2 | ⬜ |
-| 11.2 | Performance pass: index verification, N+1 audit, chunking, cache, pagination everywhere | 2 | ⬜ |
-| 11.3 | Queue + scheduler end-to-end test with 10,000 dummy recipients | 1 | ⬜ |
-| 11.4 | Global search (sender, address, subject, campaign, subscriber, date range) | 1 | ⬜ |
-| 11.5 | Activity logs across 11 event types | 1 | ⬜ |
-| 11.6 | Seeders (demo account, plans, templates) + `SETUP.md` + `DEPLOY.md` + README | 1 | ⬜ |
+| 11.1 | Security pass: policy on every model, mass-assignment audit, upload validation, rate limits, CSP for rendered email HTML | 2 | ✅ |
+| 11.2 | Performance pass: index verification, N+1 audit, chunking, cache, pagination everywhere | 2 | ✅ |
+| 11.3 | Queue + scheduler end-to-end test with 10,000 dummy recipients | 1 | ✅ |
+| 11.4 | Global search (sender, address, subject, campaign, subscriber, date range) | 1 | ✅ |
+| 11.5 | Activity logs across 11 event types | 1 | ✅ |
+| 11.6 | Seeders (demo account, plans, templates) + `SETUP.md` + `DEPLOY.md` + README | 1 | ✅ |
 
 ---
 
@@ -1673,3 +1673,89 @@ Ordering by `id` rather than by `created_at`, which the existing index would hav
 deliberate: an audit trail records bursts of events inside the same second, and paginating an
 unstable ordering shows some rows twice and skips others. In an audit trail that is worse than
 being slow.
+
+### 11.6 Seeders and the documentation
+
+**Verified rather than assumed.** `migrate:fresh --seed` was run against an empty database and
+watched: 51 migrations, then 29 permissions, 3 roles, 3 plans, system settings, a super admin and
+10 system templates. `DemoDataSeeder` on top of that adds the demo account, 60 contacts, lists, a
+campaign and an SMTP record.
+
+`DemoDataSeeder` is deliberately **not** wired into `DatabaseSeeder`, and DEPLOY.md says why: a live
+server should never come up carrying a `demo@knsoftic.test` account with a password that is written
+down in a public repository.
+
+**README.** It was still the stock Laravel one — which mattered more the moment the repository went
+public. It now describes the product, and states the four rules that actually shaped the code:
+nothing is a placeholder, it will not help anyone send unsolicited mail, a screen may not claim more
+than it knows, and deleting something stops it.
+
+**DEPLOY.md** did not exist. The two sections most likely to be skipped are the two the application
+cannot run without, so they are given their own tables of what breaks in their absence — a scheduler
+that is not installed means a campaign scheduled for 09:00 never starts and a split test never picks
+a winner; a queue worker that is not running means jobs pile up in a table with no error anywhere,
+which is the confusing part.
+
+Three things in it are warnings rather than instructions, because each is irreversible or silent:
+
+- **`APP_URL` is not cosmetic.** Every unsubscribe link and tracking URL is signed from it. Left as
+  localhost, a campaign goes out with opt-out links nobody outside the network can reach. The
+  application already refuses to send in production when it detects this — checked, not assumed:
+  it is a blocker in `CampaignDispatcher::blockers()`, and only a warning outside production.
+- **`APP_KEY` is irreversible.** SMTP and IMAP passwords use the `encrypted` cast. Rotating the key
+  makes every stored credential unreadable with no recovery.
+- **A database dump alone is not a restorable backup.** It needs `storage/app/private` and the
+  `APP_KEY` with it, or the restored install has unreadable credentials and no uploaded files.
+
+**SETUP.md** gained the four scheduler ticks with what each one's absence costs, the separate
+demo-seeder command, and the load tests — which are not part of `php artisan test` and would
+otherwise never be found.
+
+---
+
+## 18. Where this leaves the project
+
+All eleven phases are complete.
+
+| | |
+|---|---|
+| Tests | **846 / 3,220 assertions**, against real MySQL |
+| Load tests | 3 more, run deliberately — 10,000 recipients through the real queue |
+| Routes | 267 |
+| Migrations | 51 |
+| Activity events | 86, across 17 areas |
+
+### What the hardening phase actually found
+
+Phase 11 was scoped as a polish pass. It was not. Every item on it found a real defect, and the
+same one kept appearing in different clothes:
+
+**`withoutGlobalScopes()` — the plural — caused a genuine bug six times.** It reads like "ignore
+tenancy" and means "ignore every global scope, including the one that hides deleted rows". A
+deleted automation kept enrolling contacts and sending them mail. A deleted campaign kept sending
+mid-flight. A deleted mailbox kept being polled. A deleted contact kept receiving. Removed team
+members stayed on the Team screen and kept their seat. Deleted contacts and lists were still
+charged against the customer's plan allowance.
+
+**The index that looked right.** Four list screens ran `WHERE account_id = ? ORDER BY id DESC`, and
+every one of those tables already had an index starting with `account_id` — which is exactly why
+nobody looked twice. InnoDB appends the primary key *after* the index's own columns, so with
+`status` or `created_at` in between, the ordering could not be served and MySQL sorted every
+matching row. `EXPLAIN` said so in a second; reading the schema said the opposite. And then the
+same trap was walked into again one phase later, by a new screen.
+
+**Two sweeps that will keep finding things.** The cross-tenant test takes its list of routes from
+the router rather than from a hand-written list, so it fails when a new binding appears that it has
+never heard of. The query-count test renders every list screen at two sizes and asserts the cost
+does not grow with the rows. Neither can be satisfied by editing the test to match the code.
+
+### What is deliberately not here
+
+- **No policies.** Authorisation is the `AccountScope` global scope plus `permission:` middleware
+  on 106 routes. A third mechanism restating the same rule is ceremony that can drift; a sweep that
+  proves the rule holds is not.
+- **No full-text search.** The global search says plainly that it does not read message bodies or
+  attachments, rather than implying a completeness it does not have.
+- **No throttle on unsubscribe or tracking.** They are signed, and they are reached from inside
+  delivered mail where an entire office shares one address. Refusing an opt-out because a colleague
+  opted out first is the one failure worth avoiding above all others here.

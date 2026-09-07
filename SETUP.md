@@ -97,11 +97,29 @@ On Linux the equivalent crontab line is:
 * * * * * cd /path/to/app && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-Without the scheduler, a campaign set to go out at 09:00 simply never starts —
-`campaigns:dispatch-scheduled` is what picks it up. Check it is registered:
+Without the scheduler nothing time-based happens at all. Four commands run on
+it, every minute:
+
+| Command | Without it |
+|---|---|
+| `campaigns:dispatch-scheduled` | A campaign set to go out at 09:00 never starts. |
+| `automations:tick` | Automations enrol people and then never advance them: a wait step never ends. |
+| `campaigns:decide-ab` | A split test never picks a winner, so the held-back audience is never sent anything. |
+| `mailboxes:sync` | No mail is ever fetched, so the inbox and campaign replies stay empty. |
+
+Each does almost nothing most minutes — it counts what is due first and queues
+work only when there is some. Check they are registered:
 
 ```bash
 php artisan schedule:list
+```
+
+Any of them can be run by hand while you are watching:
+
+```bash
+php artisan automations:tick --sync     # advance automation runs right now
+php artisan mailboxes:sync --force      # ignore each mailbox's interval
+php artisan campaigns:decide-ab --campaign=12
 ```
 
 ### Sending speed
@@ -123,10 +141,18 @@ exceeded by raising a global value here.
 
 ```bash
 php artisan migrate:fresh --seed     # rebuild the database from scratch
+php artisan db:seed --class=DemoDataSeeder   # add the demo account and 60 contacts
 php artisan test                     # run the test suite
 php artisan optimize:clear           # clear config/route/view caches
 php artisan queue:failed             # inspect failed jobs
 ```
+
+`migrate:fresh --seed` gives you permissions, roles, the three plans, system
+settings, a super admin and ten system templates — everything the application
+needs and no sample data. `DemoDataSeeder` is separate and opt-in for exactly
+that reason: it creates `demo@knsoftic.test` / `Password123!` with contacts,
+lists, a campaign and an SMTP record, which is what you want on a laptop and
+never what you want on a server.
 
 ### Test database
 
@@ -135,6 +161,15 @@ once:
 
 ```bash
 "C:/xampp/mysql/bin/mysql.exe" -u root -e "CREATE DATABASE IF NOT EXISTS knsoftic_mail_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+The load tests are **not** part of that run. They live in `tests/Load`, which
+`phpunit.xml` does not declare as a testsuite, because one of them sends to ten
+thousand recipients through the real database queue and takes about four
+minutes. Run them deliberately, when the send path has been touched:
+
+```bash
+php vendor/bin/phpunit tests/Load/TenThousandRecipientsTest.php
 ```
 
 This is deliberate. The segment engine depends on behaviour that differs
