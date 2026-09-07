@@ -1545,3 +1545,55 @@ migration that made it true.
 matters most. The handful of screens that do not paginate are bounded by something real rather than
 by luck: mailboxes and SMTP accounts by plan limits, custom fields by a feature flag, roles by an
 explicit `limit(50)`. The contact export deliberately does not paginate, because it streams.
+
+### 11.3 Ten thousand recipients through the real queue
+
+Every correctness property in the send path is about scale — claim-before-send, the chunk loop,
+the pacing, the counters — and every one of them has a test at three or four recipients that would
+still pass if the design fell apart at ten thousand: a lock held a moment too long, a chunk that
+re-claims rows it has already sent, an accumulator that drifts by one per pass. None of that shows
+up in a small test.
+
+`tests/Load/TenThousandRecipientsTest.php` sends to ten thousand addresses through the **database**
+queue driver rather than `sync`, so the job genuinely re-queues itself, genuinely competes for its
+own lock, and genuinely paces. It lives outside the two testsuites `phpunit.xml` declares, so an
+ordinary run never touches it:
+
+```
+php vendor/bin/phpunit tests/Load/TenThousandRecipientsTest.php
+```
+
+The result, on this machine:
+
+| | |
+|---|---|
+| recipients | 10,000 |
+| audience generated in | 2.0 s |
+| sent in | 185-225 s across **20** worker passes |
+| throughput | 44-54 messages/sec |
+| peak memory | 82 MB |
+
+(Two runs, quoted as a range rather than a single figure: this is a laptop
+running MariaDB, PHP and the test in one process, and a single number from it
+would be precision the measurement does not have.)
+
+Twenty passes is exactly twenty chunks of five hundred, which is the first thing worth checking:
+the loop neither stalled nor spun.
+
+What is asserted is exactly-once, and it is asserted from the transport's own record rather than
+from the application's counters: ten thousand messages, ten thousand **distinct** addresses, and no
+address written to twice. Then the bookkeeping is checked against it — every row `sent` with none
+left claimed or locked, `sent_count` agreeing with the rows, the month's allowance charged once per
+message, nothing left on the queue and nothing in `failed_jobs`.
+
+Forty-four a second is not a ceiling worth optimising: the install-wide default pace is 120 a
+minute, so the send path is already twenty times faster than the rate it is configured to send at,
+and real throughput is set by the SMTP provider rather than by this code. Memory is flat because
+nothing loads the audience into it — the recipients are claimed and released a chunk at a time.
+
+**The scheduler** gets its own two tests in the same file, because a campaign usually sends because
+a cron tick found it, and that path has no user in it at all: nothing about it is exercised by
+pressing Send. One schedules a campaign in the past and follows it through the tick, the claim, the
+queue and out to twelve hundred recipients. The other deletes a scheduled campaign first and proves
+the tick will not pick it up — the guard `DispatchScheduledCampaigns` claims in its own comment, now
+with a test behind it.
