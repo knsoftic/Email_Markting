@@ -67,7 +67,11 @@ class EmailLogController extends Controller
                 'campaign' => fn ($q) => $q->withTrashed()->select('id', 'account_id', 'name', 'deleted_at'),
                 'smtpAccount' => fn ($q) => $q->withTrashed()->select('id', 'account_id', 'name', 'deleted_at'),
             ])
-            // See the class note: id DESC is chronological and index-backed.
+            // id DESC, not created_at: it is chronological and it is stable
+            // where two rows share a timestamp, which at send rates of
+            // thousands a minute is most of them. It became index-backed in
+            // 2026_09_07_000193 — before that it said so and filesorted every
+            // row in the account to render the first page.
             ->latest('id')
             ->paginate(50)
             ->withQueryString();

@@ -1514,3 +1514,34 @@ template preview and the inbox body — each embedded in a `sandbox=""` frame wi
 `frame-ancestors 'self'` rather than `X-Frame-Options`, because a sandboxed frame's origin is
 opaque and `SAMEORIGIN` can never match it. The two previews were missing `Referrer-Policy`, so a
 remote image in a preview told its host which page of the application was open. They have it now.
+
+### 11.2 Performance pass
+
+**N+1.** Rather than asserting a fixed query count per screen — a number that legitimately moves
+whenever a screen gains a feature, so the test ends up being rewritten to match the code — each of
+the **thirteen** list screens is now rendered twice, with three rows and with fifteen, and what is
+asserted is the shape: the count must not grow with the row count. A per-row query adds twelve and
+is caught immediately; an honest extra query for a new feature is not. All thirteen pass, which
+also confirms the automations-index batching done at the end of Phase 10 held.
+
+**Indexes.** Four list screens run `WHERE account_id = ? ORDER BY id DESC LIMIT n`, and every one
+of those tables already had an index beginning with `account_id` — which is exactly why it looked
+covered. It was not: the next column was `status` or `created_at`, and InnoDB appends the primary
+key *after* those, so the stored order is `(account_id, status, id)`. With `status` unconstrained —
+as it is on the default view everybody loads — the index cannot supply the `id` ordering, and MySQL
+sorts every matching row before taking the first fifty.
+
+`EXPLAIN` said `Using filesort` on the email log for both the plain and the status-filtered
+listing. `EmailLogController` carried a comment asserting "id DESC is chronological and
+index-backed"; it was half right, and the half that was wrong is the half that matters. That table
+gains a row per delivered email, so a busy account was sorting millions of rows to render page one.
+
+`2026_09_07_000193` adds `(account_id, id)` to subscribers, campaigns, automations and
+campaign_logs, plus `(account_id, status, id)` for the log's filtered view. Every plan re-checked
+with `EXPLAIN` afterwards: no filesort anywhere. The comment now says what is true, and names the
+migration that made it true.
+
+**Pagination** was already everywhere it needed to be — the inbox at 25 a page is the one that
+matters most. The handful of screens that do not paginate are bounded by something real rather than
+by luck: mailboxes and SMTP accounts by plan limits, custom fields by a feature flag, roles by an
+explicit `limit(50)`. The contact export deliberately does not paginate, because it streams.
