@@ -20,20 +20,54 @@ cd "$APP_DIR"
 
 # aaPanel keeps several PHP versions side by side and the system `php` is often
 # an old one. Find the newest 8.x it has, unless PHP_BIN is set explicitly.
+say() { printf '\n\033[1;34m==>\033[0m %s\n' "$1"; }
+warn() { printf '\033[1;33m  ! %s\033[0m\n' "$1"; }
+die() { printf '\n\033[1;31m  x %s\033[0m\n' "$1" >&2; exit 1; }
+
+# Which PHP the WEBSITE runs, read from aaPanel's own vhost rather than guessed.
+# Taking the newest installed version instead was wrong in a way that is easy to
+# miss: composer would resolve dependencies against a PHP that serves no
+# requests, and the extension check below would pass on the wrong binary.
+if [ -z "${PHP_BIN:-}" ]; then
+    VHOST="/www/server/panel/vhost/nginx/$(basename "$APP_DIR").conf"
+
+    if [ -f "$VHOST" ]; then
+        SITE_PHP="$(grep -oE 'enable-php-[0-9]+' "$VHOST" | head -1 | grep -oE '[0-9]+' || true)"
+
+        if [ -n "${SITE_PHP:-}" ] && [ -x "/www/server/php/$SITE_PHP/bin/php" ]; then
+            PHP_BIN="/www/server/php/$SITE_PHP/bin/php"
+        fi
+    fi
+fi
+
 if [ -z "${PHP_BIN:-}" ]; then
     for v in 84 83 82; do
         if [ -x "/www/server/php/$v/bin/php" ]; then
             PHP_BIN="/www/server/php/$v/bin/php"
+            warn "Could not read the site's PHP version from its vhost; using $v."
             break
         fi
     done
 fi
 PHP_BIN="${PHP_BIN:-$(command -v php)}"
 
-say() { printf '\n\033[1;34m==>\033[0m %s\n' "$1"; }
-warn() { printf '\033[1;33m  ! %s\033[0m\n' "$1"; }
-
 say "PHP: $PHP_BIN ($("$PHP_BIN" -r 'echo PHP_VERSION;'))"
+
+# Checked here rather than left to composer, which reports a missing extension
+# four times over as a lock-file problem and suggests `composer update` — which
+# would be the wrong fix, and would quietly change the dependency set of a live
+# server to work around a two-click panel setting.
+MISSING=""
+for ext in fileinfo mbstring openssl pdo_mysql tokenizer xml ctype curl zip gd; do
+    "$PHP_BIN" -m | grep -qix "$ext" || MISSING="$MISSING $ext"
+done
+
+if [ -n "$MISSING" ]; then
+    PHP_SHORT="$("$PHP_BIN" -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')"
+    warn "This PHP is missing:$MISSING"
+    warn "aaPanel > App Store > PHP $PHP_SHORT > Settings > Install extensions"
+    die "Install them and run this again. Do not run 'composer update' to get past it."
+fi
 
 # --------------------------------------------------------------- guardrails
 
