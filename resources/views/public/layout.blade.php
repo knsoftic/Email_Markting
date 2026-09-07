@@ -6,6 +6,9 @@
     <meta name="robots" content="noindex, nofollow">
     <title>@yield('title', 'Email preferences')</title>
 
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}" sizes="64x64">
+
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet">
 

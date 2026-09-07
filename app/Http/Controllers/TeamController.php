@@ -66,7 +66,7 @@ class TeamController extends Controller
             'email' => ['required', 'email', 'max:191', 'unique:users,email'],
             'designation' => ['nullable', 'string', 'max:100'],
             'timezone' => ['required', 'timezone'],
-            'password' => ['required', 'confirmed', Password::defaults()->min(8)],
+            'password' => ['required', 'confirmed', Password::defaults()],
             'role_id' => ['required', Rule::exists('roles', 'id')->where(
                 fn ($q) => $q->whereNull('account_id')->orWhere('account_id', $accountId)
             )],
@@ -113,7 +113,7 @@ class TeamController extends Controller
             'email' => ['required', 'email', 'max:191', Rule::unique('users', 'email')->ignore($user->id)],
             'designation' => ['nullable', 'string', 'max:100'],
             'timezone' => ['required', 'timezone'],
-            'password' => ['nullable', 'confirmed', Password::defaults()->min(8)],
+            'password' => ['nullable', 'confirmed', Password::defaults()],
             'role_id' => ['required', Rule::exists('roles', 'id')->where(
                 fn ($q) => $q->whereNull('account_id')->orWhere('account_id', $accountId)
             )],

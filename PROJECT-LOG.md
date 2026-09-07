@@ -1759,3 +1759,110 @@ does not grow with the rows. Neither can be satisfied by editing the test to mat
 - **No throttle on unsubscribe or tracking.** They are signed, and they are reached from inside
   delivered mail where an entire office shares one address. Refusing an opt-out because a colleague
   opted out first is the one failure worth avoiding above all others here.
+
+---
+
+## 19. Findings from an external penetration test (2026-09-07)
+
+Six issues were reported against the deployed site by an outside tester working
+without an account. All six were real. Each is fixed, and each has a test — the
+tests matter more than the fixes here, because every one of these is a header or
+a policy that is easy to lose in a refactor and impossible to notice has gone.
+
+### The one that was a genuine hole
+
+**The sign-in page could be framed.** No `X-Frame-Options`, no
+`frame-ancestors`. An attacker loads it in an iframe on their own site, covers
+it with their own interface, and collects a click — or a password — that the
+person believed they were giving to us. Nothing inside the application can
+detect that.
+
+A `SecurityHeaders` middleware now sets `X-Frame-Options: DENY` and a
+`Content-Security-Policy` on every response.
+
+**The trap in adding it.** Three routes serve email HTML *into a sandboxed
+iframe on our own page* — the inbox body and the two previews — and each already
+sends a much stricter policy of its own. `DENY` blocks even a same-origin frame,
+so a global header would have stopped the application rendering the mail it had
+just fetched. Responses that declare their own CSP are left alone.
+
+The middleware sets **defaults, never overrides**, and that distinction was not
+theoretical: the first version replaced `Referrer-Policy` unconditionally, which
+undid the inbox body's deliberate `no-referrer` — the header that stops a remote
+image in a stranger's email learning which page of the application was open.
+The inbox's own test from Phase 8 caught it within minutes.
+
+An honest note went into the class. `script-src` allows inline and eval, and is
+not much of an XSS defence: Alpine evaluates expressions with the `Function`
+constructor, and seven views carry inline script blocks. What it does buy is
+real — an injected external script is refused, `object-src 'none'` kills plugin
+payloads, `base-uri 'self'` stops a base tag redirecting every relative URL, and
+`form-action 'self'` stops an injected form posting a password elsewhere — but
+claiming it as XSS protection would be a lie.
+
+### Weak passwords were accepted
+
+`12345678` registered successfully. All five call sites already asked for
+`Password::defaults()`, and nothing had ever configured it, so it resolved to
+Laravel's bare eight-character minimum.
+
+Defined once now: ten characters, letters and numbers, and `uncompromised()`,
+which is the rule doing the real work. Length and character-class rules mostly
+push people toward `Password1!`, which satisfies every requirement and is still
+guessed early; checking against known breaches rejects the passwords actually
+being tried. Only the first five characters of the SHA-1 hash leave the server,
+and the rule passes if the service is unreachable rather than locking somebody
+out of their own registration. It is skipped in tests, because a suite that
+depends on a third-party service being up fails for reasons unrelated to the
+code.
+
+**Five callers were quietly weakening it.** Each did
+`Password::defaults()->min(8)`, putting the policy straight back to the default
+it was meant to replace. All removed — and a test now walks `app/Http` and fails
+if any caller does it again, because this is exactly the kind of thing that
+comes back.
+
+### The rest
+
+- **Unbranded nginx 404.** There were no custom error views at all. Seven now
+  exist, sharing a deliberately standalone frame — no components, no queries, no
+  Vite manifest — because an error page has to render when the thing that broke
+  is the layout, or the database the layout reads its branding from. A 500 while
+  rendering the 500 page is what produces a blank white screen. If an *nginx*
+  404 is still served on the deployed site, that is the pseudo-static rule
+  rather than the application: see `DEPLOY-AAPANEL.md` §10.
+- **`favicon.ico` shipped as zero bytes.** The head partial had a branch for an
+  uploaded branding favicon and no `@else`, so browsers fell back to that empty
+  file. Real `favicon.svg` and `favicon.ico` are generated and linked.
+- **Two `h1`s on the sign-in page.** The marketing panel beside the form used
+  one, and so did the form — so a screen reader announced the marketing line as
+  the subject of the page. Demoted to a paragraph. That exposed a second problem
+  the report had not seen: four auth pages had **no** heading at all and were
+  still stock Breeze markup. All six now have exactly one, in the app's palette.
+- **No `sitemap.xml`.** Added, along with something more useful. The honest
+  finding is the reverse of the one reported: `robots.txt` allowed everything,
+  including the signed per-recipient unsubscribe, preferences and tracking URLs.
+  Those reach the open web whenever somebody forwards a newsletter to a public
+  mailing-list archive, and a crawler following one puts a per-recipient URL
+  into a search index — or records a tracking "open" for a person who never
+  opened anything. Both files are routes rather than static files now, because a
+  `Sitemap:` line has to be an absolute URL and a committed file cannot know the
+  domain. A test asserts the sitemap never lists anything robots disallows.
+
+### What the browser found that the tests could not
+
+The CSP was verified by loading the application rather than by trusting the
+assertions, and that caught two things no test would have:
+
+- A **duplicate `connect-src`** directive. A CSP naming the same directive twice
+  is not additive — the browser honours the first and silently ignores the rest
+  — so the appended dev-server rule left the original in force.
+- Vite's dev server advertises itself as **`http://[::1]:5173`**, the IPv6
+  loopback, not `localhost`. CSP matches hosts literally, so an allowance naming
+  only `localhost` blocked every script and stylesheet under `npm run dev` and
+  left the developer with a blank page. All three spellings are allowed now.
+
+Neither would have failed a test. Both would have been found by the next person
+to run `npm run dev`, at the cost of an afternoon.
+
+**859 tests / 3,324 assertions.**

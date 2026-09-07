@@ -15,10 +15,14 @@
                 <x-application-logo :inverted="true" />
             </a>
 
+            {{-- A <p>, not an <h1>. This panel is the same on every auth page and
+                 says nothing about which one you are on; the page's own heading
+                 is the form beside it. Two h1s left a screen reader announcing
+                 the marketing line as the subject of the sign-in page. --}}
             <div class="relative z-10 max-w-md">
-                <h1 class="text-3xl font-semibold leading-tight tracking-tight">
+                <p class="text-3xl font-semibold leading-tight tracking-tight">
                     {{ $brand['tagline'] }}
-                </h1>
+                </p>
                 <p class="mt-4 text-sm leading-relaxed text-white/70">
                     Run permission-based campaigns, connect your mailboxes over IMAP, and keep every
                     customer reply in one threaded conversation.

@@ -28,7 +28,7 @@ class UserRequest extends FormRequest
             'designation' => ['nullable', 'string', 'max:100'],
             'timezone' => ['required', 'timezone'],
             'status' => ['required', Rule::in(['active', 'suspended', 'pending'])],
-            'password' => [$creating ? 'required' : 'nullable', 'confirmed', Password::defaults()->min(8)],
+            'password' => [$creating ? 'required' : 'nullable', 'confirmed', Password::defaults()],
 
             // Only used when creating; an existing user's account never moves.
             'company_name' => [Rule::requiredIf($creating && ! $this->boolean('is_super_admin')), 'nullable', 'string', 'max:191'],

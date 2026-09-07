@@ -21,7 +21,7 @@ class RegisterRequest extends FormRequest
             'company_name' => ['required', 'string', 'max:191'],
             'name' => ['required', 'string', 'max:191'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:191', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Password::defaults()->min(8)],
+            'password' => ['required', 'confirmed', Password::defaults()],
             'timezone' => ['required', 'string', 'timezone'],
             'terms' => ['accepted'],
         ];

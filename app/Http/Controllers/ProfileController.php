@@ -80,7 +80,7 @@ class ProfileController extends Controller
     {
         $validated = $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults()->min(8), 'confirmed'],
+            'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
 
         $request->user()->update(['password' => Hash::make($validated['password'])]);

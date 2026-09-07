@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 use Throwable;
 
 class AppServiceProvider extends ServiceProvider
@@ -35,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
         // characters. Every indexed string column is declared at 191 or less,
         // and this keeps any future default-length column in line too.
         Schema::defaultStringLength(191);
+
+        $this->definePasswordPolicy();
 
         // Catch lazy-loaded relations during development instead of shipping
         // N+1 queries into a 100k-row campaign screen.
@@ -145,5 +148,37 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('superadmin', fn () => (bool) auth()->user()?->isSuperAdmin());
 
         Blade::if('accountowner', fn () => (bool) auth()->user()?->isAccountOwner());
+    }
+
+    /**
+     * What counts as an acceptable password, defined once.
+     *
+     * Registration, the reset form, the profile screen and the change-password
+     * screen all already ask for `Password::defaults()`. Until this was set,
+     * that resolved to Laravel's bare default of eight characters and nothing
+     * else — so `12345678`, which is close to the most common password in every
+     * breach corpus ever published, was accepted.
+     *
+     * `uncompromised()` is the rule that does the most work. Length and
+     * character-class requirements mostly push people toward `Password1!`,
+     * which satisfies every rule here and is still guessed early; checking the
+     * password against known breaches rejects the ones that are actually being
+     * tried. It uses the k-anonymity API, so only the first five characters of
+     * the SHA-1 hash leave the server — never the password, and never enough of
+     * the hash to identify it. If that service cannot be reached the rule
+     * passes rather than locking people out of their own registration.
+     */
+    protected function definePasswordPolicy(): void
+    {
+        Password::defaults(function () {
+            $rule = Password::min(10)->letters()->numbers();
+
+            // Not in tests: it is an outbound HTTP call, and a suite that
+            // depends on a third-party service being up is a suite that fails
+            // for reasons that have nothing to do with the code.
+            return app()->runningUnitTests()
+                ? $rule
+                : $rule->uncompromised();
+        });
     }
 }

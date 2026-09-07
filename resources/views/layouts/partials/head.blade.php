@@ -42,8 +42,14 @@
 <title>@yield('title', $title ?? $brand['company_name'])</title>
 <meta name="description" content="{{ $brand['tagline'] }}">
 
+{{-- An install that has uploaded its own favicon uses it; everything else gets
+     ours. Without the @else the browser fell back to /favicon.ico on its own,
+     and that file shipped as zero bytes — so every tab showed a broken icon. --}}
 @if ($hasFavicon)
     <link rel="icon" href="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($favicon) }}">
+@else
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <link rel="alternate icon" href="{{ asset('favicon.ico') }}" sizes="64x64">
 @endif
 
 <link rel="preconnect" href="https://fonts.bunny.net">

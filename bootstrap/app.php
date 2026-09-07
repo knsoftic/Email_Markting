@@ -5,6 +5,7 @@ use App\Http\Middleware\EnsureEmailIsVerifiedWhenRequired;
 use App\Http\Middleware\EnsureHasAccount;
 use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\EnsureSuperAdmin;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetTenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,8 +20,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // SetTenant runs on every web request, right after the session is
         // available, so the AccountScope is armed before any query runs.
+        //
+        // SecurityHeaders runs last so it sees the finished response, including
+        // the stricter policy the three email-preview routes set for
+        // themselves — which it deliberately leaves alone.
         $middleware->web(append: [
             SetTenant::class,
+            SecurityHeaders::class,
         ]);
 
         $middleware->alias([
