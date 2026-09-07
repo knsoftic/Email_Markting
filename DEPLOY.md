@@ -2,6 +2,10 @@
 
 For a Linux server running nginx or Apache, PHP 8.2+ and MySQL 8 / MariaDB 10.4+.
 
+**Using aaPanel?** Read [DEPLOY-AAPANEL.md](DEPLOY-AAPANEL.md) instead — it
+covers the same ground with aaPanel's paths, and its disabled-function defaults,
+which stop `composer install` before it starts.
+
 Read this in order. The two sections most likely to be skipped — the scheduler
 and the queue worker — are the two the application cannot run without.
 

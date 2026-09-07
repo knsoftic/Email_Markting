@@ -82,7 +82,9 @@ and a super admin at `admin@knsoftic.com`.
 Two background processes matter and the application does nothing time-based
 without them — a queue worker and the scheduler. Both are covered in SETUP.md.
 
-For a server, see [DEPLOY.md](DEPLOY.md).
+For a server, see [DEPLOY.md](DEPLOY.md) — or
+[DEPLOY-AAPANEL.md](DEPLOY-AAPANEL.md) if you are deploying through aaPanel,
+which has its own traps worth knowing about first.
 
 ---
 
