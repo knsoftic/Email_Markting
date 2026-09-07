@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToAccount;
+use App\Support\Search;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,6 @@ class Suppression extends Model
 
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
-        return $term ? $query->where('email', 'like', '%'.$term.'%') : $query;
+        return $term ? $query->where('email', 'like', Search::contains($term)) : $query;
     }
 }

@@ -53,6 +53,14 @@ Route::middleware(['auth', 'verified', 'account.active'])->group(function () {
     // Inbox & composer (Phase 8) ---------------------------------------
     Route::middleware('has.account')->group(base_path('routes/inbox.php'));
 
+    // Global search (Phase 11.4) ----------------------------------------
+    // No permission slug here: GlobalSearch decides group by group what this
+    // user may look at. A slug on the route would have to be the union of every
+    // module's — refusing somebody who can see contacts because they cannot see
+    // the inbox — or the intersection, which is nothing at all.
+    Route::middleware('has.account')->get('search', [\App\Http\Controllers\SearchController::class, 'index'])
+        ->name('search.index');
+
     // In-app notifications (Phase 10.5) ---------------------------------
     Route::middleware('has.account')->group(base_path('routes/notifications.php'));
 

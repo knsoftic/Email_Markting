@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToAccount;
+use App\Support\Search;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,7 +45,7 @@ class CampaignLog extends Model
             return $query;
         }
 
-        $like = '%'.$term.'%';
+        $like = Search::contains($term);
 
         return $query->where(function (Builder $q) use ($like) {
             $q->where('recipient_email', 'like', $like)

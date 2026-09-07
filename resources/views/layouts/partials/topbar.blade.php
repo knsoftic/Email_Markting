@@ -31,6 +31,27 @@
         @endisset
     </div>
 
+    {{-- Global search. Guarded on the route existing AND on the user having an
+         account: this same top bar is included by the admin layout, where a
+         super admin has no tenant to search. A GET form, so a search is a URL
+         somebody can bookmark, share or reload. --}}
+    @if (isset($user) && $user->account_id && \Illuminate\Support\Facades\Route::has('search.index'))
+        <form method="GET" action="{{ route('search.index') }}" class="hidden sm:block">
+            <label for="kn-topbar-search" class="sr-only">Search</label>
+            <div class="relative">
+                <svg class="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"
+                     fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="m21 21-4.35-4.35M17 10.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z"/>
+                </svg>
+                <input id="kn-topbar-search" type="search" name="q"
+                       value="{{ request()->routeIs('search.index') ? request()->filter('q') : '' }}"
+                       placeholder="Search"
+                       class="w-40 rounded-lg border-ink-200 bg-white py-1.5 pl-8 pr-3 text-sm placeholder:text-ink-400 focus:border-brand-500 focus:ring-brand-500 md:w-56">
+            </div>
+        </form>
+    @endif
+
     {{-- The bell, its unread badge and its dropdown. The partial does its own
          guarding: it renders nothing, and runs no query at all, for a user
          with no account — this same top bar is included by the admin layout,

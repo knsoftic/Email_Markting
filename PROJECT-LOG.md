@@ -1597,3 +1597,39 @@ pressing Send. One schedules a campaign in the past and follows it through the t
 queue and out to twelve hundred recipients. The other deletes a scheduled campaign first and proves
 the tick will not pick it up — the guard `DispatchScheduledCampaigns` claims in its own comment, now
 with a test behind it.
+
+### 11.4 Global search
+
+One box across contacts, campaigns, inbox messages, the email log, templates, automations, lists,
+segments, tags and the do-not-send list, with a date range.
+
+**It reuses each model's own idea of "search".** Four models already carry a `scopeSearch`, written
+when their own list screen was built. The global search calls those rather than restating them: a
+global search matching different fields from the screen it sends you to would answer a question
+nobody asked, and the two definitions would drift the first time one of them gained a column.
+
+**Permissions decide what is searched, not what is hidden afterwards.** Each group carries the
+permission its own screen requires, and a group the user may not open is never queried. Filtering
+results after the fact would still leak the count of matches behind a locked door. The screen says
+plainly that some areas were skipped and why, rather than quietly presenting a partial answer as a
+complete one.
+
+**Two things about the cost, both stated on the screen.** A substring match cannot use an index, so
+what keeps it honest is `ORDER BY id DESC LIMIT n` over the `(account_id, id)` indexes added in
+11.2: MySQL walks the account newest-first and stops as soon as it has enough. That makes a term
+which matches *anything* cheap however large the table is. The expensive case is a term that
+matches **nothing** — it has to walk the whole account before it can say so — which is why terms
+shorter than two characters are refused outright rather than run, and the empty state says so.
+
+The screen also says what it does *not* do: it never reads message bodies or attachments. That
+content is not indexed and searching it would mean reading every message on every search. Somebody
+whose search misses deserves to know why rather than concluding the product is broken.
+
+**A defect the tests surfaced.** `%` and `_` are LIKE's own operators, so searching for a single `%`
+returned every record in every table, and an address containing an underscore returned a list with
+nothing to do with it — with nothing on screen able to explain it. `App\Support\Search` now escapes
+them in one place, and the four model scopes and the global search all go through it, so a term
+means the same thing in the box at the top of the page as it does on the contacts screen.
+
+Verified in a browser as well as in tests: the results render, and a result row is a real link —
+clicking a contact lands on that contact's edit screen, not a placeholder.
