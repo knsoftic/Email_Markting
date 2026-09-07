@@ -221,6 +221,8 @@ not something this application can do for them.
 
 ## 7. Updating
 
+`bash deploy.sh` does all of this and stops at the first failure. By hand:
+
 ```bash
 cd /var/www/knsoftic
 php artisan down

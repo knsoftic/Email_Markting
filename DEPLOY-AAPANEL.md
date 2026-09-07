@@ -439,6 +439,20 @@ seeder, and immediately:
 
 ## 16. Updating later
 
+There is a script for this. It stops at the first failure rather than carrying
+on and leaving the site half-updated:
+
+```bash
+cd /www/wwwroot/email.knbazaar.com && bash deploy.sh
+```
+
+It finds the right PHP binary itself, refuses to run without an `APP_KEY`, puts
+the site into maintenance mode and brings it back up even if a step fails, and
+stops outright if `public/build/manifest.json` is missing rather than leaving
+you with an unstyled site.
+
+The equivalent by hand, if you would rather see each step:
+
 ```bash
 cd /www/wwwroot/email.knbazaar.com
 /www/server/php/82/bin/php artisan down
