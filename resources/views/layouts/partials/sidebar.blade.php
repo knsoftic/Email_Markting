@@ -76,6 +76,7 @@
             'items' => [
                 ['label' => 'Analytics', 'route' => 'analytics.index', 'icon' => 'analytics', 'permission' => 'analytics.view'],
                 ['label' => 'Email Logs', 'route' => 'logs.index', 'icon' => 'logs', 'permission' => 'logs.view'],
+                ['label' => 'Activity', 'route' => 'activity.index', 'icon' => 'logs', 'permission' => 'settings.view'],
             ],
         ],
         [

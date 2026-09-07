@@ -53,6 +53,14 @@ Route::middleware(['auth', 'verified', 'account.active'])->group(function () {
     // Inbox & composer (Phase 8) ---------------------------------------
     Route::middleware('has.account')->group(base_path('routes/inbox.php'));
 
+    // The account's own audit trail (Phase 11.5) -------------------------
+    // Gated on settings.view: this shows what every member of the account did,
+    // which is account administration rather than a module's own data.
+    Route::middleware('has.account')
+        ->get('activity', [\App\Http\Controllers\ActivityController::class, 'index'])
+        ->middleware('permission:settings.view')
+        ->name('activity.index');
+
     // Global search (Phase 11.4) ----------------------------------------
     // No permission slug here: GlobalSearch decides group by group what this
     // user may look at. A slug on the route would have to be the union of every

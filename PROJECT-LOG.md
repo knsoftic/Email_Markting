@@ -1633,3 +1633,43 @@ means the same thing in the box at the top of the page as it does on the contact
 
 Verified in a browser as well as in tests: the results render, and a result row is a real link —
 clicking a contact lands on that contact's edit screen, not a placeholder.
+
+### 11.5 The account's own activity log
+
+Every module already wrote to `activity_logs` — **86 distinct events across 17 areas**, from
+`campaign.cancelled` to `smtp.test_failed` to `auth.login`. The plan asked for eleven event types
+and the application had eight times that. What it did not have was a screen an account could read:
+the only one that existed was the super admin's.
+
+That is the gap worth naming plainly. An account whose contact list was emptied, whose campaign was
+cancelled or whose SMTP password was changed had no way to find out who did it, while the platform
+operator could see all of it. An audit trail only the vendor can read is not an audit trail for the
+customer.
+
+`/activity` shows it, filtered by area, by person, by date range and by a search over the
+description and the event name. It says what it will not do, too: entries are kept for as long as
+the account exists and nothing can edit or remove them, which is the only reason a log is worth
+reading.
+
+**Areas rather than a list of every event.** The admin screen builds its dropdown from
+`SELECT DISTINCT event`, and at 86 options that is a list nobody scans. This filters on the part
+before the dot — 17 choices, no query at all to build them, and `event LIKE 'campaign.%'` is a
+prefix match an index can serve. (The admin screen's `DISTINCT` was checked rather than assumed:
+`EXPLAIN` reports a covering index scan, so it was left alone.)
+
+**A real leak, caught by its own test.** The "Done by" dropdown was `User::query()->get()` — and
+`User` is one of the few models that does **not** use the `BelongsToAccount` trait, so there is no
+`AccountScope` on it and that returns every user of every account. The screen was listing other
+customers' staff by name. It is filtered explicitly now, with the reason written above it, and a
+sweep confirmed the only other unscoped `User` query in the application (`AccountNotifier`) already
+filters correctly.
+
+**And the same index trap, one phase later.** `EXPLAIN` on the new screen said `Using filesort`:
+`activity_logs` had `(account_id, created_at)` and `(event, created_at)`, and neither can serve
+`WHERE account_id = ? ORDER BY id DESC` — exactly the shape fixed for four other tables in 11.2,
+reintroduced by a new screen a day later. `2026_09_07_000194` adds `(account_id, id)`.
+
+Ordering by `id` rather than by `created_at`, which the existing index would have served, is
+deliberate: an audit trail records bursts of events inside the same second, and paginating an
+unstable ordering shows some rows twice and skips others. In an audit trail that is worse than
+being slow.
