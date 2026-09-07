@@ -250,8 +250,25 @@ cd /www/wwwroot/email.knbazaar.com
 ```
 
 That installs permissions, roles, the three plans, system settings, a **super
-admin** and the system email templates. The super admin's address is printed by
-the seeder — sign in and change its password immediately.
+admin** and the system email templates.
+
+**Set the super admin's password now, before the site is reachable.** The
+seeder reads `KNS_ADMIN_PASSWORD` from `.env`, and both the placeholder in
+`.env.example` and the fallback it uses when the variable is missing are
+published in a public repository — so until you change it, this install has a
+platform administrator whose password anybody can look up:
+
+```bash
+/www/server/php/82/bin/php artisan kn:admin-password
+```
+
+It prompts, with the input hidden, and holds the new password to the same
+policy as everybody else's. It deliberately takes no `--password` option: a
+password on the command line goes into `~/.bash_history`, is visible to every
+other user in `ps`, and on many systems is shipped to a log aggregator.
+
+Then delete the `KNS_ADMIN_PASSWORD` line from `.env`. Leaving it there means
+re-running the seeder puts the old password back.
 
 **Do not run `DemoDataSeeder` on this server.** It creates
 `demo@knsoftic.test` with a password published in a public repository. It is

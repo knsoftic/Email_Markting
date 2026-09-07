@@ -84,7 +84,18 @@ admin and the system email templates. It does **not** install demo data;
 because a live server should never come up with a `demo@knsoftic.test` account
 that has a known password.
 
-Change the super admin's password at first sign-in.
+**Set the super admin's password before the site is reachable.** The seeder
+reads `KNS_ADMIN_PASSWORD` from `.env`, and both the placeholder in
+`.env.example` and its fallback are published in a public repository:
+
+```bash
+php artisan kn:admin-password
+```
+
+It prompts with the input hidden, applies the same password policy as every
+other password in the application, and takes no `--password` option on purpose.
+Afterwards, remove `KNS_ADMIN_PASSWORD` from `.env` — re-running the seeder
+would otherwise restore the old one.
 
 Finally:
 
