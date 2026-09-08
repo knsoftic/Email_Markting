@@ -29,7 +29,12 @@ class SyncMailboxes extends Command
         // Not withoutGlobalScopes(): that also lifts SoftDeletingScope, and a
         // deleted mailbox would go on being polled every minute — spending the
         // provider's rate limit to download mail into an inbox nobody can open.
-        $query = Mailbox::withoutGlobalScope(AccountScope::class)->syncable();
+        $query = Mailbox::withoutGlobalScope(AccountScope::class)
+            ->syncable()
+            // Nothing is fetched for a suspended account either. Its users
+            // cannot open the inbox, so filling it costs the provider's rate
+            // limit and the account's storage for mail nobody can read.
+            ->whereHas('account', fn ($q) => $q->where('status', 'active'));
 
         if ($id = $this->option('mailbox')) {
             $query->whereKey((int) $id);

@@ -43,6 +43,27 @@ class SmtpSender
      */
     public function send(Account $account, Email $message, ?Collection $candidates = null): SendOutcome
     {
+        /*
+         * A suspended account sends nothing. Checked here rather than in each
+         * of the four callers, because this is the one place all of them pass
+         * through and the only one that cannot be forgotten by the fifth.
+         *
+         * Suspension used to stop only the web session: EnsureAccountIsActive
+         * logged the users out, and the queue carried on. A campaign already in
+         * flight kept sending, the scheduler kept starting new ones, and
+         * automations kept mailing — so suspending an account for non-payment
+         * or for abuse did not stop the thing an operator suspends it to stop.
+         *
+         * Reported as no-capacity, not as a failure. That way the work pauses
+         * and resumes if the account is reactivated, instead of burning every
+         * recipient as failed and losing the campaign.
+         */
+        if (! $account->isActive()) {
+            return SendOutcome::noCapacity(
+                'This account is suspended, so nothing is being sent for it. Sending resumes if it is reactivated.'
+            );
+        }
+
         $candidates ??= $this->selector->candidatesFor($account);
 
         if ($candidates->isEmpty()) {

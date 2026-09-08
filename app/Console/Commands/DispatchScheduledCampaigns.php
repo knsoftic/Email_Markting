@@ -35,6 +35,11 @@ class DispatchScheduledCampaigns extends Command
             ->where('status', 'scheduled')
             ->whereNotNull('scheduled_at')
             ->where('scheduled_at', '<=', now())
+            // A suspended account's campaigns stay scheduled and go out if it
+            // is reactivated. The sender refuses them anyway, but queueing work
+            // that is certain to be refused fills the failed-job table with
+            // noise an operator then has to read past.
+            ->whereHas('account', fn ($q) => $q->where('status', 'active'))
             ->orderBy('scheduled_at')
             ->limit(50)
             ->get();

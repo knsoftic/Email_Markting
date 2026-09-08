@@ -39,8 +39,23 @@ class SettingController extends Controller
             'accent_color' => ['required', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'footer_text' => ['nullable', 'string', 'max:191'],
             'email_footer' => ['nullable', 'string', 'max:255'],
-            'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,svg,webp', 'max:2048'],
-            'favicon' => ['nullable', 'image', 'mimes:png,ico,svg', 'max:512'],
+            /*
+             * The `image` rule and the `mimes` list used to contradict each
+             * other: mimes offered svg and ico, `image` refuses both, so an
+             * operator following the help text got a rejection that named a
+             * format the screen had just recommended.
+             *
+             * SVG is left out deliberately rather than enabled with
+             * `image:allow_svg`. An SVG is a document that can carry script,
+             * and this file is served from our own origin to every signed-in
+             * user of every tenant — a logo is not worth that.
+             *
+             * The favicon drops the `image` rule instead of dropping .ico:
+             * `mimes` checks the real content type through fileinfo, not the
+             * extension, and .ico is what most people actually have.
+             */
+            'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
+            'favicon' => ['nullable', 'file', 'mimes:png,ico,webp', 'max:512'],
             'remove_logo' => ['nullable', 'boolean'],
             'remove_favicon' => ['nullable', 'boolean'],
         ]);

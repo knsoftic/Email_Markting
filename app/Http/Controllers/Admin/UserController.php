@@ -132,6 +132,18 @@ class UserController extends Controller
     {
         $data = $request->validated();
 
+        /*
+         * The same guard Suspend and Delete already carry, which this form did
+         * not. Suspending yourself here signs you out on the next request and
+         * leaves nobody able to sign back in and undo it — the one mistake in
+         * this panel that cannot be corrected from inside the product.
+         */
+        if ($user->is($request->user()) && $data['status'] !== 'active') {
+            return back()
+                ->withInput()
+                ->with('error', 'You cannot suspend your own account — you would not be able to sign back in to undo it.');
+        }
+
         $user->fill([
             'name' => $data['name'],
             'email' => $data['email'],

@@ -34,9 +34,34 @@ class UserRequest extends FormRequest
             'company_name' => [Rule::requiredIf($creating && ! $this->boolean('is_super_admin')), 'nullable', 'string', 'max:191'],
             'plan_id' => ['nullable', 'integer', 'exists:plans,id'],
             'is_super_admin' => ['boolean'],
-            'role_id' => ['nullable', 'integer', 'exists:roles,id'],
+            /*
+             * A bare exists:roles,id accepted ANY role id, including a private
+             * role belonging to a different customer — an id typed into the
+             * request would have attached one tenant's role to another tenant's
+             * user. A role is assignable only if it is a system role (account_id
+             * null, which is how the seeded ones are stored) or belongs to the
+             * account this user is actually in.
+             */
+            'role_id' => ['nullable', 'integer', Rule::exists('roles', 'id')->where(
+                fn ($query) => $query->where(fn ($q) => $q
+                    ->whereNull('account_id')
+                    ->orWhere('account_id', $user?->account_id ?? $this->accountIdForNewUser())
+                )
+            )],
             'email_verified' => ['boolean'],
         ];
+    }
+
+    /**
+     * The account a NEW user will land in.
+     *
+     * Creating from this panel always provisions a fresh account, so there is
+     * no account whose private roles could apply yet — only the system roles
+     * can. Returning null makes the rule above accept exactly those.
+     */
+    protected function accountIdForNewUser(): ?int
+    {
+        return null;
     }
 
     protected function prepareForValidation(): void

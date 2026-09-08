@@ -60,6 +60,19 @@ class SubscriptionController extends Controller
 
         $plan = Plan::findOrFail($data['plan_id']);
 
+        /*
+         * Per-account limit overrides live on the SUBSCRIPTION row, and assigning
+         * a plan writes a new one. Without this they would be silently dropped:
+         * an operator who had given a customer 50,000 contacts on a 20,000 plan
+         * would move them to a bigger plan and, in the same click, take the
+         * override away — with nothing on screen saying so.
+         *
+         * Carried forward and stated in the message instead. An operator who
+         * wants them gone can clear them on the overrides card, which is a
+         * deliberate act rather than a side effect of a different one.
+         */
+        $carried = $account->subscription?->overrides ?: null;
+
         $subscription = Subscription::withoutGlobalScopes()->create([
             'account_id' => $account->id,
             'plan_id' => $plan->id,
@@ -69,16 +82,25 @@ class SubscriptionController extends Controller
             'trial_ends_at' => $data['status'] === 'trial' ? now()->addDays(max(1, $plan->trial_days)) : null,
             'currency' => $plan->currency,
             'notes' => $data['notes'] ?? null,
+            'overrides' => $carried,
         ]);
 
         ActivityLogger::log(
             'admin.subscription.assigned',
             "Assigned {$plan->name} to {$account->name}",
-            ['account_id' => $account->id],
+            ['account_id' => $account->id, 'carried_overrides' => $carried ? array_keys($carried) : []],
             $subscription
         );
 
-        return back()->with('success', "{$account->name} is now on the {$plan->name} plan.");
+        $message = "{$account->name} is now on the {$plan->name} plan.";
+
+        if ($carried) {
+            $message .= ' '.count($carried).' per-account '
+                .\Illuminate\Support\Str::plural('override', count($carried))
+                .' were kept — clear them below if this plan should decide on its own.';
+        }
+
+        return back()->with('success', $message);
     }
 
     /** Change status, extend the term or edit per-account limit overrides. */

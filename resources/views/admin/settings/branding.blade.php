@@ -52,8 +52,10 @@
                             <span class="text-xs text-ink-400">No logo uploaded — the KN wordmark is used.</span>
                         @endif
                     </div>
-                    <input id="logo" name="logo" type="file" accept="image/*" class="kn-input">
-                    <p class="kn-help">PNG, JPG, SVG or WebP up to 2 MB. Shown at 36px tall.</p>
+                    <input id="logo" name="logo" type="file" accept=".png,.jpg,.jpeg,.webp" class="kn-input">
+                    <p class="kn-help">PNG, JPG or WebP up to 2 MB. Shown at 36px tall.
+                       SVG is not accepted: it can carry script, and this file is served to every
+                       signed-in user.</p>
                     @if ($values['logo_path'])
                         <label class="mt-2 inline-flex items-center gap-2 text-xs text-ink-600">
                             <input type="checkbox" name="remove_logo" value="1" class="kn-checkbox"> Remove current logo
@@ -71,8 +73,8 @@
                             <span class="text-xs text-ink-400">No favicon uploaded.</span>
                         @endif
                     </div>
-                    <input id="favicon" name="favicon" type="file" accept="image/*" class="kn-input">
-                    <p class="kn-help">PNG, ICO or SVG up to 512 KB.</p>
+                    <input id="favicon" name="favicon" type="file" accept=".png,.ico,.webp" class="kn-input">
+                    <p class="kn-help">PNG, ICO or WebP up to 512 KB.</p>
                     @if ($values['favicon_path'])
                         <label class="mt-2 inline-flex items-center gap-2 text-xs text-ink-600">
                             <input type="checkbox" name="remove_favicon" value="1" class="kn-checkbox"> Remove current favicon

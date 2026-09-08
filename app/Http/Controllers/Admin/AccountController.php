@@ -67,11 +67,28 @@ class AccountController extends Controller
             'current' => $usage->firstWhere('period', UsageCounter::currentPeriod())
                 ?? new UsageCounter(['period' => UsageCounter::currentPeriod()]),
             'counts' => [
-                'subscribers' => Subscriber::withoutGlobalScopes()->where('account_id', $account->id)->count(),
-                'campaigns' => Campaign::withoutGlobalScopes()->where('account_id', $account->id)->count(),
-                'smtp' => SmtpAccount::withoutGlobalScope(AccountScope::class)->where('account_id', $account->id)->count(),
-                'mailboxes' => Mailbox::withoutGlobalScopes()->where('account_id', $account->id)->count(),
-                'users' => User::withoutGlobalScopes()->where('account_id', $account->id)->count(),
+                /*
+                 * withoutGlobalScope(AccountScope::class), never the plural
+                 * form: the plural also lifts SoftDeletingScope, so these cards
+                 * counted rows the customer had deleted. The accounts LIST
+                 * counts them the other way, so the same customer showed two
+                 * different contact counts on two screens of the same panel,
+                 * and an operator checking whether somebody was near their plan
+                 * limit could read either one.
+                 *
+                 * These agree with the list, and with what PlanLimits charges
+                 * the customer for.
+                 */
+                'subscribers' => Subscriber::withoutGlobalScope(AccountScope::class)
+                    ->where('account_id', $account->id)->count(),
+                'campaigns' => Campaign::withoutGlobalScope(AccountScope::class)
+                    ->where('account_id', $account->id)->count(),
+                'smtp' => SmtpAccount::withoutGlobalScope(AccountScope::class)
+                    ->where('account_id', $account->id)->count(),
+                'mailboxes' => Mailbox::withoutGlobalScope(AccountScope::class)
+                    ->where('account_id', $account->id)->count(),
+                'users' => User::withoutGlobalScope(AccountScope::class)
+                    ->where('account_id', $account->id)->count(),
             ],
         ]);
     }

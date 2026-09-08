@@ -2,7 +2,23 @@
     <x-slot name="header">Payment settings</x-slot>
 
     <x-page-header title="Payment settings"
-                   subtitle="Currency and manual payment instructions shown to accounts on the billing screen." />
+                   subtitle="Your own record of how customers pay you. Nothing here is charged or shown automatically." />
+
+    {{-- Said plainly, because the previous wording promised the opposite.
+         There is no payment gateway in this product and no billing screen for
+         customers: these four values are stored and read back only here. --}}
+    <div class="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        <p class="font-semibold">This screen does not take payments.</p>
+        <p class="mt-1">
+            KN Softic has no payment gateway and does not show these details to customers anywhere.
+            They are kept here for your own reference, so the terms you quote stay in one place.
+        </p>
+        <p class="mt-2">
+            Money is collected outside the product. What actually changes a customer's access is
+            assigning or extending their plan on
+            <a href="{{ route('admin.accounts.index') }}" class="font-medium underline">Accounts</a>.
+        </p>
+    </div>
 
     <form method="POST" action="{{ route('admin.settings.payment.update') }}" class="space-y-6">
         @csrf @method('PUT')
@@ -35,14 +51,14 @@
                 <div>
                     <x-input-label for="bank_details" value="Bank / transfer details" />
                     <textarea id="bank_details" name="bank_details" rows="5" class="kn-textarea">{{ old('bank_details', $values['bank_details']) }}</textarea>
-                    <p class="kn-help">Account title, number, IBAN, branch — whatever customers need to pay you.</p>
+                    <p class="kn-help">Account title, number, IBAN, branch. For your reference — send these to a customer yourself.</p>
                     <x-input-error :messages="$errors->get('bank_details')" />
                 </div>
 
                 <div>
                     <x-input-label for="instructions" value="Payment instructions" />
                     <textarea id="instructions" name="instructions" rows="4" class="kn-textarea">{{ old('instructions', $values['instructions']) }}</textarea>
-                    <p class="kn-help">How to send proof of payment and how long activation takes.</p>
+                    <p class="kn-help">Your standard wording for proof of payment and activation time. Not shown to customers automatically.</p>
                     <x-input-error :messages="$errors->get('instructions')" />
                 </div>
             </div>
