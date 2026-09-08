@@ -249,7 +249,7 @@ cd /www/wwwroot/email.knbazaar.com
 /www/server/php/82/bin/php artisan db:seed --force
 ```
 
-That installs permissions, roles, the three plans, system settings, a **super
+That installs permissions, roles, the four plans, system settings, a **super
 admin** and the system email templates.
 
 **Set the super admin's password now, before the site is reachable.** The
@@ -448,8 +448,13 @@ seeder, and immediately:
 1. Change the super admin password.
 2. **Admin → Settings → Branding** — set the product name, logo and support
    address.
-3. **Admin → Plans** — review the three seeded plans and their limits.
-4. Create your first account, then add an SMTP account to it and use the
+3. **Admin → Plans** — review the four seeded plans and their limits
+   (Free $0, Starter $5, Business $29, Pro $79).
+4. **Admin SMTP** — create a global SMTP account and **assign** it to the
+   **Free** plan. Free accounts are not allowed SMTP of their own, so without
+   an assignment reaching them they have no way to send at all. An account with
+   no assignment shows as *Reaching nobody* on the list.
+5. Create your first account, then add an SMTP account to it and use the
    **Test** button before sending anything real.
 
 ---
@@ -492,6 +497,29 @@ supervisorctl restart knsoftic-worker
 Restarting the worker is not optional — see `--max-time` in §13.
 
 Take a database backup **before** running migrations.
+
+### Plans are not re-seeded by `deploy.sh`, on purpose
+
+Plans are data, not schema, so the deploy script leaves them alone. When a
+release adds or changes a plan, run the seeder yourself afterwards:
+
+```bash
+/www/server/php/82/bin/php artisan db:seed --class=PlanSeeder --force
+```
+
+It matches on the plan's slug, so it updates the existing rows rather than
+duplicating them — and it writes **every** limit and feature column on every
+run, which is what makes the result the same on a fresh install and on a
+three-year-old database.
+
+That is also the reason it is not part of the deploy: **it overwrites anything
+you changed in Admin → Plans.** If you have adjusted a price or a limit there
+and want to keep it, either edit `database/seeders/PlanSeeder.php` to match
+before running it, or do not run it and make the change by hand in the admin
+instead.
+
+Editing a plan — by seeder or by hand — takes effect **immediately for every
+account already on it**. Check the *Subscribers* column on Admin → Plans first.
 
 ---
 
