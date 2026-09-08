@@ -24,6 +24,8 @@
     --brand: #1d4ed8;
     --brand-soft: #eaefff;
 
+    --free: #57534e;
+    --free-soft: #f0efed;
     --starter: #0f766e;
     --starter-soft: #e2f4f1;
     --business: #1d4ed8;
@@ -55,6 +57,8 @@
         --brand: #7d9bff;
         --brand-soft: #1a2340;
 
+        --free: #b6b0a8;
+        --free-soft: #2a2724;
         --starter: #4ecdc0;
         --starter-soft: #13302c;
         --business: #7d9bff;
@@ -192,6 +196,7 @@ h1 {
     background: currentColor;
 }
 
+.chip-free     { background: var(--free-soft);     color: var(--free); }
 .chip-starter  { background: var(--starter-soft);  color: var(--starter); }
 .chip-business { background: var(--business-soft); color: var(--business); }
 .chip-pro      { background: var(--pro-soft);      color: var(--pro); }
@@ -453,6 +458,7 @@ td.num {
 .yes { color: var(--starter); font-weight: 600; }
 .no  { color: var(--muted); }
 
+th.plan-free     { color: var(--free); }
 th.plan-starter  { color: var(--starter); }
 th.plan-business { color: var(--business); }
 th.plan-pro      { color: var(--pro); }
@@ -490,7 +496,8 @@ th.plan-pro      { color: var(--pro); }
     </p>
 
     <div class="plan-legend">
-        <span class="chip chip-starter">Starter — free</span>
+        <span class="chip chip-free">Free — $0</span>
+        <span class="chip chip-starter">Starter — $5/mah</span>
         <span class="chip chip-business">Business — $29/mah</span>
         <span class="chip chip-pro">Pro — $79/mah</span>
     </div>
@@ -527,6 +534,7 @@ th.plan-pro      { color: var(--pro); }
 <section id="shuru">
     <h2 class="section-title">Shuruaat</h2>
     <div class="avail">
+        <span class="chip chip-free">Free</span>
         <span class="chip chip-starter">Starter</span>
         <span class="chip chip-business">Business</span>
         <span class="chip chip-pro">Pro</span>
@@ -570,6 +578,7 @@ th.plan-pro      { color: var(--pro); }
 <section id="contacts">
     <h2 class="section-title">Contacts add karna</h2>
     <div class="avail">
+        <span class="chip chip-free">Free — 500 tak</span>
         <span class="chip chip-starter">Starter — 2,000 tak</span>
         <span class="chip chip-business">Business — 20,000</span>
         <span class="chip chip-pro">Pro — 100,000</span>
@@ -613,6 +622,7 @@ th.plan-pro      { color: var(--pro); }
 <section id="import">
     <h2 class="section-title">CSV se import</h2>
     <div class="avail">
+        <span class="chip chip-free">Free</span>
         <span class="chip chip-starter">Starter</span>
         <span class="chip chip-business">Business</span>
         <span class="chip chip-pro">Pro</span>
@@ -647,7 +657,8 @@ th.plan-pro      { color: var(--pro); }
 <section id="lists">
     <h2 class="section-title">Lists aur Tags</h2>
     <div class="avail">
-        <span class="chip chip-starter">Starter — 5 lists</span>
+        <span class="chip chip-free">Free — 2 lists</span>
+        <span class="chip chip-starter">Starter — 10</span>
         <span class="chip chip-business">Business — 50</span>
         <span class="chip chip-pro">Pro — bay-hisab</span>
     </div>
@@ -673,13 +684,14 @@ th.plan-pro      { color: var(--pro); }
 <section id="segments">
     <h2 class="section-title">Segments</h2>
     <div class="avail">
+        <span class="chip chip-starter">Starter</span>
         <span class="chip chip-business">Business</span>
         <span class="chip chip-pro">Pro</span>
     </div>
 
     <div class="note note-warn">
         <span class="tag">Plan</span>
-        <p>Starter par ye feature nahi hai. Business ya Pro par upgrade karne se khul jata hai.</p>
+        <p>Free par ye feature nahi hai. Starter ($5/mah) se upar har plan mein khul jata hai.</p>
     </div>
 
     <p>
@@ -705,7 +717,8 @@ th.plan-pro      { color: var(--pro); }
 <section id="templates">
     <h2 class="section-title">Templates</h2>
     <div class="avail">
-        <span class="chip chip-starter">Starter — 10</span>
+        <span class="chip chip-free">Free — 5</span>
+        <span class="chip chip-starter">Starter — 25</span>
         <span class="chip chip-business">Business — 100</span>
         <span class="chip chip-pro">Pro — bay-hisab</span>
     </div>
@@ -739,7 +752,8 @@ th.plan-pro      { color: var(--pro); }
 <section id="campaign">
     <h2 class="section-title">Campaign banana aur bhejna</h2>
     <div class="avail">
-        <span class="chip chip-starter">Starter — 10/mah</span>
+        <span class="chip chip-free">Free — 5/mah</span>
+        <span class="chip chip-starter">Starter — 20/mah</span>
         <span class="chip chip-business">Business — 100/mah</span>
         <span class="chip chip-pro">Pro — bay-hisab</span>
     </div>
@@ -790,6 +804,7 @@ th.plan-pro      { color: var(--pro); }
 <section id="results">
     <h2 class="section-title">Results dekhna</h2>
     <div class="avail">
+        <span class="chip chip-free">Free — buniyadi</span>
         <span class="chip chip-starter">Starter — buniyadi</span>
         <span class="chip chip-business">Business — tafseeli</span>
         <span class="chip chip-pro">Pro — tafseeli</span>
@@ -826,21 +841,26 @@ th.plan-pro      { color: var(--pro); }
 <section id="smtp">
     <h2 class="section-title">SMTP — email kis raste jata hai</h2>
     <div class="avail">
-        <span class="chip chip-business">Business — 2 accounts</span>
-        <span class="chip chip-pro">Pro — 5 + rotation</span>
+        <span class="chip chip-starter">Starter — 1 account</span>
+        <span class="chip chip-business">Business — 3 accounts</span>
+        <span class="chip chip-pro">Pro — 10 + rotation</span>
     </div>
 
     <div class="note note-warn">
         <span class="tag">Plan</span>
         <p>
-            <strong>Starter par apna SMTP add nahi kar sakte.</strong> Aap ke email admin ke diye hue
-            account se jate hain — kuch karne ki zaroorat nahi, bas bhejte rahein.
+            <strong>Free par apna SMTP add nahi kar sakte.</strong> Aap ke email platform ke apne
+            SMTP se jate hain — wohi jo admin ne aap ke plan ya aap ke account ko assign kiya hai.
+            Aap ko kuch set nahi karna: SMTP Accounts screen khali dikhegi, phir bhi campaign chala
+            jayega. Agar na jaye to iska matlab admin ne abhi koi SMTP assign nahi kiya — support
+            ko likh dein.
         </p>
     </div>
 
     <p>
-        Business aur Pro par apna SMTP account jorh sakte hain — Gmail, Zoho, Amazon SES, Mailgun,
-        ya koi bhi provider. Fayda ye ke bhejne ki had aur reputation aap ki apni hoti hai.
+        Starter ($5/mah) se upar har plan par apna SMTP account jorh sakte hain — Gmail, Zoho,
+        Amazon SES, Mailgun, ya koi bhi provider. Fayda ye ke bhejne ki had aur reputation aap ki
+        apni hoti hai. Admin ka diya hua SMTP phir bhi saath chalta rehta hai.
     </p>
 
     <ol class="steps">
@@ -849,6 +869,43 @@ th.plan-pro      { color: var(--pro); }
         <li>Ghanta, din aur mahine ki had likhein taake provider ki limit se aage na barhein.</li>
         <li><strong>Test</strong> dabayein. Ye asli connection banata hai — pass ho to hi save karein.</li>
     </ol>
+
+    <h3>Admin ka SMTP kaise kaam karta hai</h3>
+
+    <p>
+        Do raste hain jin se email nikal sakta hai: <strong>aap ka apna SMTP</strong>, aur
+        <strong>platform ka SMTP</strong> jo admin ne aap ko diya ho. Free plan par sirf doosra
+        rasta khula hota hai; baqi plans par dono chalte hain.
+    </p>
+
+    <p>
+        Admin ka SMTP aap ki screen par <em>nahi</em> dikhta — na uska password, na host, kuch bhi
+        nahi. Aap ko sirf itna karna hai: campaign banayein aur <strong>Send</strong> dabayein.
+        System khud dekh leta hai ke aap ke liye kaun sa account khula hai.
+    </p>
+
+    <ol class="steps">
+        <li>Admin apne paas ek SMTP account banata hai aur usay <strong>global</strong> rakhta hai.</li>
+        <li>Phir woh usay <strong>assign</strong> karta hai — ya poore platform ko, ya kisi ek plan
+            ko (jaise "sab Free wale"), ya sirf aap ke account ko.</li>
+        <li>Jaise hi assignment ban jati hai, aap ke campaign us raste se jane lagte hain. Aap ki
+            taraf se koi setting nahi badalni.</li>
+    </ol>
+
+    <div class="note note-warn">
+        <span class="tag">Yaad rahe</span>
+        <p>
+            Sirf SMTP account bana dena kaafi nahi — <strong>assignment</strong> zaroori hai. Agar
+            admin ne account bana kar assign nahi kiya, to woh kisi tak nahi pohanchta aur campaign
+            "koi SMTP nahi mila" keh kar ruk jata hai. Aisa ho to support ko bata dein.
+        </p>
+    </div>
+
+    <p>
+        Admin ke account par bhi ghanta/din/mahina ki had lagi hoti hai, aur woh had aap ke plan ki
+        had se alag cheez hai. Dono mein se jo pehle khatam ho, bhejna wahin ruk jata hai — aur
+        aglay ghante ya din woh khud chal parta hai.
+    </p>
 
     <p>
         <strong>Pro par rotation</strong> milta hai: kai accounts baari baari istemal hote hain, aur
@@ -868,6 +925,11 @@ th.plan-pro      { color: var(--pro); }
         <span class="chip chip-starter">Starter — 1 mailbox</span>
         <span class="chip chip-business">Business — 3</span>
         <span class="chip chip-pro">Pro — 10</span>
+    </div>
+
+    <div class="note note-warn">
+        <span class="tag">Plan</span>
+        <p>Free par inbox nahi milta — Starter ($5/mah) se ye khul jata hai.</p>
     </div>
 
     <p>
@@ -949,7 +1011,7 @@ th.plan-pro      { color: var(--pro); }
 
     <div class="note note-warn">
         <span class="tag">Plan</span>
-        <p>Starter par ye feature nahi hai.</p>
+        <p>Free aur Starter par ye feature nahi hai. Business se khulta hai.</p>
     </div>
 
     <p>
@@ -1038,7 +1100,8 @@ th.plan-pro      { color: var(--pro); }
 <section id="team">
     <h2 class="section-title">Team members</h2>
     <div class="avail">
-        <span class="chip chip-starter">Starter — sirf aap</span>
+        <span class="chip chip-free">Free — sirf aap</span>
+        <span class="chip chip-starter">Starter — 2</span>
         <span class="chip chip-business">Business — 5</span>
         <span class="chip chip-pro">Pro — 20</span>
     </div>
@@ -1063,6 +1126,7 @@ th.plan-pro      { color: var(--pro); }
 <section id="dhoondna">
     <h2 class="section-title">Dhoondna aur record dekhna</h2>
     <div class="avail">
+        <span class="chip chip-free">Free</span>
         <span class="chip chip-starter">Starter</span>
         <span class="chip chip-business">Business</span>
         <span class="chip chip-pro">Pro</span>
@@ -1123,33 +1187,35 @@ th.plan-pro      { color: var(--pro); }
             <thead>
                 <tr>
                     <th>Cheez</th>
+                    <th class="plan-free">Free</th>
                     <th class="plan-starter">Starter</th>
                     <th class="plan-business">Business</th>
                     <th class="plan-pro">Pro</th>
                 </tr>
             </thead>
             <tbody>
-                <tr><td>Qeemat / mah</td><td class="num">Free</td><td class="num">$29</td><td class="num">$79</td></tr>
-                <tr><td>Contacts</td><td class="num">2,000</td><td class="num">20,000</td><td class="num">100,000</td></tr>
-                <tr><td>Email / mah</td><td class="num">10,000</td><td class="num">100,000</td><td class="num">500,000</td></tr>
-                <tr><td>Email / din</td><td class="num">1,000</td><td class="num">10,000</td><td class="num">50,000</td></tr>
-                <tr><td>Campaigns / mah</td><td class="num">10</td><td class="num">100</td><td class="num">Bay-hisab</td></tr>
-                <tr><td>Lists</td><td class="num">5</td><td class="num">50</td><td class="num">Bay-hisab</td></tr>
-                <tr><td>Templates</td><td class="num">10</td><td class="num">100</td><td class="num">Bay-hisab</td></tr>
-                <tr><td>Mailboxes (IMAP)</td><td class="num">1</td><td class="num">3</td><td class="num">10</td></tr>
-                <tr><td>Team members</td><td class="num">1</td><td class="num">5</td><td class="num">20</td></tr>
-                <tr><td>Storage</td><td class="num">512 MB</td><td class="num">5 GB</td><td class="num">20 GB</td></tr>
-                <tr><td>Apna SMTP</td><td class="no">Nahi</td><td class="yes">Haan — 2</td><td class="yes">Haan — 5</td></tr>
-                <tr><td>SMTP rotation</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">Haan</td></tr>
-                <tr><td>Automations</td><td class="no">Nahi</td><td class="yes">5</td><td class="yes">50</td></tr>
-                <tr><td>Segments</td><td class="no">Nahi</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
-                <tr><td>Custom fields</td><td class="no">Nahi</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
-                <tr><td>A/B testing</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">Haan</td></tr>
-                <tr><td>Tafseeli analytics</td><td class="no">Nahi</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
-                <tr><td>API</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">Haan</td></tr>
-                <tr><td>Scheduling</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
-                <tr><td>Attachments</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
-                <tr><td>Template builder</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>Qeemat / mah</td><td class="num">Free</td><td class="num">$5</td><td class="num">$29</td><td class="num">$79</td></tr>
+                <tr><td>Contacts</td><td class="num">500</td><td class="num">2,000</td><td class="num">20,000</td><td class="num">100,000</td></tr>
+                <tr><td>Email / mah</td><td class="num">1,000</td><td class="num">10,000</td><td class="num">100,000</td><td class="num">500,000</td></tr>
+                <tr><td>Email / din</td><td class="num">100</td><td class="num">1,000</td><td class="num">10,000</td><td class="num">50,000</td></tr>
+                <tr><td>Campaigns / mah</td><td class="num">5</td><td class="num">20</td><td class="num">100</td><td class="num">Bay-hisab</td></tr>
+                <tr><td>Lists</td><td class="num">2</td><td class="num">10</td><td class="num">50</td><td class="num">Bay-hisab</td></tr>
+                <tr><td>Templates</td><td class="num">5</td><td class="num">25</td><td class="num">100</td><td class="num">Bay-hisab</td></tr>
+                <tr><td>Mailboxes (IMAP)</td><td class="no">Nahi</td><td class="num">1</td><td class="num">3</td><td class="num">10</td></tr>
+                <tr><td>Team members</td><td class="num">1</td><td class="num">2</td><td class="num">5</td><td class="num">20</td></tr>
+                <tr><td>Storage</td><td class="num">100 MB</td><td class="num">512 MB</td><td class="num">5 GB</td><td class="num">20 GB</td></tr>
+                <tr><td>Apna SMTP</td><td class="no">Nahi</td><td class="yes">Haan — 1</td><td class="yes">Haan — 3</td><td class="yes">Haan — 10</td></tr>
+                <tr><td>Admin ka SMTP</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>SMTP rotation</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">Haan</td></tr>
+                <tr><td>Automations</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">5</td><td class="yes">50</td></tr>
+                <tr><td>Segments</td><td class="no">Nahi</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>Custom fields</td><td class="no">Nahi</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>A/B testing</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">Haan</td></tr>
+                <tr><td>Tafseeli analytics</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>API</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">Haan</td></tr>
+                <tr><td>Scheduling</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>Attachments</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>Template builder</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
             </tbody>
         </table>
     </div>

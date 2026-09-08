@@ -37,7 +37,10 @@ class SettingsService
         'system' => [
             'allow_registration' => '1',
             'require_email_verification' => '1',
-            'default_plan_slug' => 'starter',
+            // Signups land on the free plan. This setting wins over the plan's
+            // own is_default flag (see AccountProvisioner::defaultPlan), so the
+            // two have to be kept saying the same thing.
+            'default_plan_slug' => 'free',
             'trial_days' => '14',
         ],
         'payment' => [

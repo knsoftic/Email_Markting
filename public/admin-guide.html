@@ -539,6 +539,31 @@ tbody tr:last-child td { border-bottom: 0; }
         </p>
     </div>
 
+    <h3>Jo plans pehle se maujood hain</h3>
+
+    <p>
+        Install ke saath char plans aate hain: <strong>Free ($0)</strong>, <strong>Starter
+        ($5/mah)</strong>, <strong>Business ($29/mah)</strong> aur <strong>Pro ($79/mah)</strong>.
+        Free par customer apna SMTP nahi laga sakta — uska email sirf aap ke diye hue (global) SMTP
+        se jata hai, aur inbox bhi Starter se khulta hai. Qeemat ya koi bhi had aap yahin badal
+        sakte hain.
+    </p>
+
+    <div class="note note-care">
+        <span class="lbl">Naya customer kis plan par aata hai</span>
+        <p>
+            Ye <strong>Settings → System → Default plan</strong> se tay hota hai, plan ki apni
+            "default" tick se nahi — setting jeetti hai. Abhi ye <strong>Free</strong> par lagi
+            hai. Agar aap chahte hain ke naye log seedha kisi paid plan ke trial par aayein, to
+            wahan badal dein.
+        </p>
+        <p>
+            Aur agar Free customers ko bhejna hai to <strong>Admin SMTP</strong> par ek global
+            account bana kar usay <strong>Free plan</strong> ko assign karna zaroori hai — warna
+            un ke paas bhejne ka koi raasta nahi hoga.
+        </p>
+    </div>
+
     <h3>Khaali khaana = bay-hisab</h3>
 
     <p>
@@ -703,8 +728,9 @@ tbody tr:last-child td { border-bottom: 0; }
     <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-danger">Bhejne ka raasta — ghalat setting sab ka bhejna rok deti hai</span></div>
 
     <p>
-        Kuch customers apna SMTP nahi lagate — jaise Starter plan wale, jinhein ijazat hi nahi.
-        Un ka email <strong>aap ke diye hue</strong> SMTP account se jata hai. Wohi yahan banate hain.
+        Kuch customers apna SMTP nahi lagate — jaise <strong>Free plan wale</strong>, jinhein
+        ijazat hi nahi (<code>allow_custom_smtp</code> band hai). Un ka email <strong>aap ke diye
+        hue</strong> SMTP account se jata hai. Wohi yahan banate hain.
     </p>
 
     <ol class="steps">

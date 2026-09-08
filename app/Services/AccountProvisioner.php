@@ -103,7 +103,11 @@ class AccountProvisioner
 
     public function defaultPlan(): ?Plan
     {
-        $slug = (string) $this->settings->get('system', 'default_plan_slug', 'starter');
+        // No fallback argument on purpose. Passing one here would win over
+        // SettingsService::DEFAULTS (get() reads `$default ?? DEFAULTS[...]`),
+        // which is how a hardcoded 'starter' kept sending new signups to a paid
+        // plan after the default had been changed in one place.
+        $slug = (string) $this->settings->get('system', 'default_plan_slug');
 
         return Plan::active()->where('slug', $slug)->first()
             ?? Plan::active()->where('is_default', true)->first()

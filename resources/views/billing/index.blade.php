@@ -8,6 +8,23 @@
          */
         $currency = $payment['currency_symbol'] ?: ($payment['currency'] ?: '');
 
+        /**
+         * A plan carries its own currency code, and Admin → Payment settings
+         * carries the symbol. Nothing keeps the two in step, so a plan created
+         * in USD was being priced with whatever symbol the operator had saved —
+         * "Rs 5.00" on the customer's screen while Admin → Plans listed the same
+         * row as "USD 5.00". The symbol is only used when the two agree; when
+         * they do not, the plan's own code is shown, because that is the column
+         * that says what the number means.
+         */
+        $money = function ($plan, int $decimals = 2) use ($currency, $payment) {
+            $amount = number_format((float) $plan->price, $decimals);
+
+            return $plan->currency === $payment['currency']
+                ? $currency.$amount
+                : $plan->currency.' '.$amount;
+        };
+
         $currentPlanId = $plan?->id;
         $hasInstructions = trim((string) $payment['bank_details']) !== ''
             || trim((string) $payment['instructions']) !== '';
@@ -97,7 +114,7 @@
                     <div>
                         <p class="text-xs uppercase tracking-wide text-ink-400">Price</p>
                         <p class="text-ink-700">
-                            {{ $currency }}{{ number_format((float) $plan->price, 2) }}
+                            {{ $money($plan) }}
                             <span class="text-ink-500">/ {{ $plan->billing_period ?: 'month' }}</span>
                         </p>
                     </div>
@@ -138,7 +155,7 @@
                             @if ((float) $option->price <= 0)
                                 Free
                             @else
-                                {{ $currency }}{{ number_format((float) $option->price, 0) }}
+                                {{ $money($option, 0) }}
                                 <span class="text-sm font-normal text-ink-500">/ {{ $option->billing_period ?: 'month' }}</span>
                             @endif
                         </p>

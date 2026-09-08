@@ -130,6 +130,39 @@ class BillingScreenTest extends TestCase
             ->assertDontSee('Where to pay');
     }
 
+    /**
+     * The symbol lives in Admin → Payment settings and the currency code lives
+     * on the plan, and nothing keeps them in step. A plan priced in USD was
+     * being rendered with whatever symbol the operator had saved — "Rs 5.00"
+     * on this screen while Admin → Plans listed the same row as "USD 5.00".
+     */
+    public function test_a_plan_in_another_currency_is_not_priced_with_the_wrong_symbol(): void
+    {
+        app(SettingsService::class)->setMany('payment', [
+            'currency' => 'PKR', 'currency_symbol' => 'Rs ',
+        ]);
+
+        Plan::withoutGlobalScopes()->where('slug', 'starter')
+            ->update(['currency' => 'USD', 'price' => 5]);
+
+        $this->get('/billing')
+            ->assertOk()
+            ->assertSee('USD 5')
+            ->assertDontSee('Rs 5');
+    }
+
+    public function test_the_symbol_is_used_when_the_currencies_agree(): void
+    {
+        app(SettingsService::class)->setMany('payment', [
+            'currency' => 'PKR', 'currency_symbol' => 'Rs ',
+        ]);
+
+        Plan::withoutGlobalScopes()->where('slug', 'starter')
+            ->update(['currency' => 'PKR', 'price' => 5]);
+
+        $this->get('/billing')->assertOk()->assertSee('Rs 5');
+    }
+
     // --------------------------------------------------- adjusted limits
 
     /**

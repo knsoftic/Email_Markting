@@ -11,6 +11,7 @@ use App\Models\Suppression;
 use App\Models\Tag;
 use App\Models\User;
 use App\Services\AccountProvisioner;
+use App\Support\PlanLimits;
 use App\Support\TenantManager;
 use Database\Seeders\PermissionSeeder;
 use Database\Seeders\PlanSeeder;
@@ -82,10 +83,18 @@ class ContactScreensTest extends TestCase
         Subscriber::factory()->forAccount($this->owner->account)->count(3)->create();
         Subscriber::factory()->forAccount($this->owner->account)->unsubscribed()->create();
 
+        // Read from the plan rather than hardcoding a figure: the usage line is
+        // what is under test, not what the default plan happens to grant this
+        // year. A literal here made this fail the day the ladder gained a free
+        // tier, which told us nothing about the screen.
+        $limit = PlanLimits::for($this->owner->account)->limit('max_contacts');
+
+        $this->assertNotNull($limit, 'The default plan is expected to cap contacts.');
+
         $this->get('/subscribers')
             ->assertOk()
             ->assertSee('Unsubscribed')
-            ->assertSee('2,000'); // the Starter contact limit, formatted
+            ->assertSee(number_format($limit));
     }
 
     // --------------------------------------------------------------- forms
