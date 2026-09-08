@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Role;
+use App\Models\Scopes\AccountScope;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -44,24 +45,37 @@ class SuperAdminSeeder extends Seeder
             $generated = true;
         }
 
-        $existing = User::withoutGlobalScopes()->where('email', $email)->first();
+        // withTrashed, and it matters. This used to be withoutGlobalScopes(),
+        // which lifts SoftDeletingScope as a side effect — so a deleted admin
+        // was "found", the seeder reported "already exists" and returned, and
+        // re-seeding (the documented way to recover a lost admin) left the
+        // platform with no usable login. Creating a new one instead is not an
+        // option either: users.email is uniquely indexed and the deleted row
+        // still holds the address. So the row is restored.
+        $existing = User::withoutGlobalScope(AccountScope::class)->withTrashed()
+            ->where('email', $email)->first();
 
         // An existing admin keeps the password they have. Re-running the
         // seeder as part of a deploy must not reset a password somebody
         // deliberately changed — which is exactly what updateOrCreate did.
         if ($existing) {
+            $restored = $existing->trashed();
+
             $existing->forceFill([
                 'role_id' => $role?->id,
                 'is_super_admin' => true,
                 'status' => 'active',
+                'deleted_at' => null,
             ])->save();
 
-            $this->command?->info("Super admin already exists: {$email} (password unchanged)");
+            $this->command?->info($restored
+                ? "Super admin restored: {$email} (password unchanged)"
+                : "Super admin already exists: {$email} (password unchanged)");
 
             return;
         }
 
-        User::withoutGlobalScopes()->create([
+        User::withoutGlobalScope(AccountScope::class)->create([
             'account_id' => null,
             'role_id' => $role?->id,
             'is_super_admin' => true,

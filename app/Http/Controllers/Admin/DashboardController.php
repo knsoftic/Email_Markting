@@ -19,9 +19,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 /**
- * Platform overview. Super admins run with no tenant bound, so every query
- * here still needs withoutGlobalScopes() on tenant-owned models to be explicit
- * about reading across all accounts.
+ * Platform overview. Super admins run with no tenant bound, so every query here
+ * still lifts AccountScope explicitly to read across all accounts.
+ *
+ * Note the singular: withoutGlobalScope(AccountScope::class), never
+ * withoutGlobalScopes(). The plural form also lifts SoftDeletingScope, which is
+ * how these cards came to count deleted users, contacts, campaigns, mailboxes
+ * and inbox mail as if they were still there — while the accounts card, which
+ * never lifted anything, correctly did not. Two answers to "how many" on one
+ * screen, and the deleted rows also reached the "recent" lists below.
  */
 class DashboardController extends Controller
 {
@@ -29,7 +35,7 @@ class DashboardController extends Controller
 
     public function __invoke(): View
     {
-        $campaignTotals = Campaign::withoutGlobalScopes()
+        $campaignTotals = Campaign::withoutGlobalScope(AccountScope::class)
             ->selectRaw('COALESCE(SUM(sent_count),0) sent, COALESCE(SUM(failed_count),0) failed, COALESCE(SUM(unique_opens),0) opens, COALESCE(SUM(unique_clicks),0) clicks')
             ->first();
 
@@ -37,32 +43,32 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', [
             'stats' => [
-                'users_total' => User::withoutGlobalScopes()->count(),
-                'users_active' => User::withoutGlobalScopes()->where('status', 'active')->count(),
-                'users_suspended' => User::withoutGlobalScopes()->where('status', 'suspended')->count(),
+                'users_total' => User::withoutGlobalScope(AccountScope::class)->count(),
+                'users_active' => User::withoutGlobalScope(AccountScope::class)->where('status', 'active')->count(),
+                'users_suspended' => User::withoutGlobalScope(AccountScope::class)->where('status', 'suspended')->count(),
                 'accounts_total' => Account::count(),
                 'accounts_active' => Account::where('status', 'active')->count(),
-                'subscribers_total' => Subscriber::withoutGlobalScopes()->count(),
-                'campaigns_total' => Campaign::withoutGlobalScopes()->count(),
+                'subscribers_total' => Subscriber::withoutGlobalScope(AccountScope::class)->count(),
+                'campaigns_total' => Campaign::withoutGlobalScope(AccountScope::class)->count(),
                 'emails_sent' => $sent,
                 'emails_failed' => (int) ($campaignTotals->failed ?? 0),
-                'emails_received' => Email::withoutGlobalScopes()->where('direction', 'incoming')->count(),
+                'emails_received' => Email::withoutGlobalScope(AccountScope::class)->where('direction', 'incoming')->count(),
                 'smtp_accounts' => SmtpAccount::withoutGlobalScope(AccountScope::class)->count(),
-                'mailboxes' => Mailbox::withoutGlobalScopes()->count(),
+                'mailboxes' => Mailbox::withoutGlobalScope(AccountScope::class)->count(),
                 'open_rate' => $sent > 0 ? round(((int) $campaignTotals->opens / $sent) * 100, 1) : 0.0,
                 'click_rate' => $sent > 0 ? round(((int) $campaignTotals->clicks / $sent) * 100, 1) : 0.0,
             ],
             'charts' => [
                 'registrations' => $this->dailySeries(
-                    User::withoutGlobalScopes()->getQuery(), 'created_at'
+                    User::withoutGlobalScope(AccountScope::class)->getQuery(), 'created_at'
                 ),
                 'sending' => $this->dailySeries(
-                    CampaignLog::withoutGlobalScopes()->where('status', 'sent')->getQuery(), 'created_at'
+                    CampaignLog::withoutGlobalScope(AccountScope::class)->where('status', 'sent')->getQuery(), 'created_at'
                 ),
             ],
-            'recentUsers' => User::withoutGlobalScopes()->with('account')->latest()->limit(8)->get(),
-            'recentCampaigns' => Campaign::withoutGlobalScopes()->with('account')->latest()->limit(8)->get(),
-            'recentActivity' => ActivityLog::withoutGlobalScopes()->with('user')->latest()->limit(10)->get(),
+            'recentUsers' => User::withoutGlobalScope(AccountScope::class)->with('account')->latest()->limit(8)->get(),
+            'recentCampaigns' => Campaign::withoutGlobalScope(AccountScope::class)->with('account')->latest()->limit(8)->get(),
+            'recentActivity' => ActivityLog::withoutGlobalScope(AccountScope::class)->with('user')->latest()->limit(10)->get(),
             'queue' => $this->health->queue(),
             'health' => $this->health->checks(),
         ]);

@@ -118,7 +118,13 @@
                     <x-input-label for="role_id" value="Assigned role" />
                     <select id="role_id" name="role_id" class="kn-select sm:max-w-sm">
                         @foreach ($roles as $role)
-                            <option value="{{ $role->id }}" @selected(old('role_id', $user->role_id) === $role->id)>
+                            {{-- Loose comparison on purpose: old() hands back a
+                                 string from the session while $role->id is an
+                                 int, so === matched nothing after a validation
+                                 error. Every option came back unselected, the
+                                 browser showed the first one, and resubmitting
+                                 quietly reassigned the user's role. --}}
+                            <option value="{{ $role->id }}" @selected((int) old('role_id', $user->role_id) === (int) $role->id)>
                                 {{ $role->name }}{{ $role->account_id ? ' (account role)' : '' }}
                             </option>
                         @endforeach

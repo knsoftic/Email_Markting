@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Scopes\AccountScope;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
@@ -37,7 +38,11 @@ class SetAdminPassword extends Command
 
     public function handle(): int
     {
-        $admins = User::withoutGlobalScopes()->where('is_super_admin', true)->get();
+        // Singular: the plural form also lifts SoftDeletingScope, which offered
+        // deleted admins as targets and let this set a password on an account
+        // that can never sign in.
+        $admins = User::withoutGlobalScope(AccountScope::class)
+            ->where('is_super_admin', true)->get();
 
         if ($admins->isEmpty()) {
             $this->error('There is no super admin on this install. Run `php artisan db:seed` first.');

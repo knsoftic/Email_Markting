@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\UserRequest;
 use App\Models\Campaign;
 use App\Models\Plan;
 use App\Models\Role;
+use App\Models\Scopes\AccountScope;
 use App\Models\Subscriber;
 use App\Models\User;
 use App\Services\AccountProvisioner;
@@ -23,7 +24,7 @@ class UserController extends Controller
 
     public function index(Request $request): View
     {
-        $users = User::withoutGlobalScopes()
+        $users = User::withoutGlobalScope(AccountScope::class)
             ->with(['account.subscription.plan', 'role'])
             ->when($request->filter('q'), function ($query, string $term) {
                 $like = '%'.$term.'%';
@@ -111,9 +112,11 @@ class UserController extends Controller
         return view('admin.users.show', [
             'user' => $user,
             'stats' => $accountId ? [
-                'subscribers' => Subscriber::withoutGlobalScopes()->where('account_id', $accountId)->count(),
-                'campaigns' => Campaign::withoutGlobalScopes()->where('account_id', $accountId)->count(),
-                'team' => User::withoutGlobalScopes()->where('account_id', $accountId)->count(),
+                // Singular, so these agree with the counts the customer sees
+                // on their own screens rather than including deleted rows.
+                'subscribers' => Subscriber::withoutGlobalScope(AccountScope::class)->where('account_id', $accountId)->count(),
+                'campaigns' => Campaign::withoutGlobalScope(AccountScope::class)->where('account_id', $accountId)->count(),
+                'team' => User::withoutGlobalScope(AccountScope::class)->where('account_id', $accountId)->count(),
             ] : null,
             'recentActivity' => $user->activityLogs()->withoutGlobalScopes()->latest()->limit(15)->get(),
         ]);
@@ -236,7 +239,11 @@ class UserController extends Controller
 
         abort_unless($adminId !== null, 403);
 
-        $admin = User::withoutGlobalScopes()->findOrFail($adminId);
+        // withTrashed on purpose, and only here: an admin deleted while
+        // impersonating somebody must still be able to get out of that session.
+        // The login below is immediately followed by the admin screens, which
+        // will refuse a deleted account on the next request.
+        $admin = User::withoutGlobalScope(AccountScope::class)->withTrashed()->findOrFail($adminId);
         $current = $request->user();
 
         auth()->login($admin);
