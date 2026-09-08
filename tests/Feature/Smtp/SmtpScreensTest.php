@@ -263,6 +263,125 @@ class SmtpScreensTest extends TestCase
         $this->get("/smtp/{$shared->id}")->assertOk();
     }
 
+    /**
+     * The list screen, not the detail page.
+     *
+     * Everything above tests /smtp/{id}, and a tenant almost never arrives
+     * there directly — they open the list, look for the account their mail is
+     * going through, and judge from what they find. Both halves of that
+     * rendering (the selector returning the account, and the section being
+     * shown at all) could be broken without a single test failing, and the
+     * symptom would be exactly the report this was written for: "the admin
+     * SMTP accounts are not showing to the user".
+     */
+    public function test_an_assigned_shared_account_appears_on_the_list_screen(): void
+    {
+        $shared = SmtpAccount::factory()->global()->create(['name' => 'Platform relay']);
+        SmtpAssignment::create(['smtp_account_id' => $shared->id, 'scope' => 'all']);
+
+        $this->asOwner();
+
+        $this->get('/smtp')
+            ->assertOk()
+            ->assertSee('Provided by')
+            ->assertSee('Platform relay')
+            ->assertSee($shared->host);
+    }
+
+    public function test_a_plan_scoped_shared_account_appears_on_the_list_only_for_that_plan(): void
+    {
+        $shared = SmtpAccount::factory()->global()->create(['name' => 'Business relay']);
+        $business = Plan::where('slug', 'business')->firstOrFail();
+        SmtpAssignment::create([
+            'smtp_account_id' => $shared->id, 'scope' => 'plan', 'plan_id' => $business->id,
+        ]);
+
+        $this->asOwner();
+        $this->get('/smtp')->assertOk()->assertDontSee('Business relay');
+
+        $this->owner->account->subscription->update(['plan_id' => $business->id]);
+        $this->owner->account->refresh();
+
+        $this->get('/smtp')->assertOk()->assertSee('Business relay');
+    }
+
+    /**
+     * A tenant that may not add its own SMTP and has none shared with it yet.
+     * The screen must still show the section its mail would come from, and say
+     * nothing has been assigned — that is the difference between "an
+     * administrator has not done it yet" and "this product is broken", and it
+     * is the exact case behind the report that admin SMTP accounts were not
+     * showing up.
+     */
+    public function test_a_tenant_awaiting_an_assignment_is_told_what_is_missing(): void
+    {
+        $this->allow(['allow_custom_smtp' => false, 'max_smtp_accounts' => 0]);
+
+        SmtpAccount::withoutGlobalScopes()->where('is_global', false)->delete();
+
+        $this->asOwner();
+
+        $this->get('/smtp')
+            ->assertOk()
+            ->assertSee('Provided by')
+            ->assertSee('No shared accounts assigned yet')
+            ->assertDontSee('Add SMTP account');
+    }
+
+    /**
+     * The genuinely dead case — neither route allowed. Here there is nothing to
+     * show and nothing for the tenant to do, so the screen says who to ask.
+     */
+    public function test_a_tenant_with_no_route_out_at_all_is_told_to_contact_support(): void
+    {
+        $this->allow([
+            'allow_custom_smtp' => false, 'max_smtp_accounts' => 0, 'allow_admin_smtp' => false,
+        ]);
+
+        SmtpAccount::withoutGlobalScopes()->where('is_global', false)->delete();
+
+        $this->asOwner();
+
+        $this->get('/smtp')
+            ->assertOk()
+            ->assertSee('No SMTP account yet')
+            ->assertSee('does not include your own SMTP accounts')
+            ->assertDontSee('Add SMTP account');
+    }
+
+    /**
+     * The same tenant once an administrator has shared an account with it: the
+     * screen must stop saying sending is unavailable.
+     */
+    public function test_a_shared_account_replaces_that_message(): void
+    {
+        $this->allow(['allow_custom_smtp' => false, 'max_smtp_accounts' => 0]);
+        SmtpAccount::withoutGlobalScopes()->where('is_global', false)->delete();
+
+        $shared = SmtpAccount::factory()->global()->create(['name' => 'Platform relay']);
+        SmtpAssignment::create(['smtp_account_id' => $shared->id, 'scope' => 'all']);
+
+        $this->asOwner();
+
+        $this->get('/smtp')
+            ->assertOk()
+            ->assertSee('Platform relay')
+            ->assertDontSee('No SMTP account yet');
+    }
+
+    /**
+     * The plan allows the platform's accounts but nobody has assigned one. The
+     * section has to appear and explain itself, or the tenant cannot tell the
+     * difference between "not set up yet" and "broken".
+     */
+    public function test_the_shared_section_explains_itself_when_nothing_is_assigned(): void
+    {
+        $this->get('/smtp')
+            ->assertOk()
+            ->assertSee('Provided by')
+            ->assertSee('No shared accounts assigned yet');
+    }
+
     public function test_one_account_cannot_reach_another_accounts_smtp(): void
     {
         $other = app(AccountProvisioner::class)->provision([

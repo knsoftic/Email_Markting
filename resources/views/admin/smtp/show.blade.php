@@ -148,7 +148,15 @@
                                         <label class="flex items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-ink-50">
                                             <input type="checkbox" name="plan_ids[]" value="{{ $plan->id }}"
                                                    class="kn-checkbox" @checked(in_array($plan->id, (array) $planIds))>
-                                            <span class="min-w-0 truncate text-sm text-ink-700">{{ $plan->name }}</span>
+                                            <span class="min-w-0 truncate text-sm text-ink-700">
+                                                {{ $plan->name }}
+                                                {{-- A deleted plan is listed only because this account is
+                                                     already assigned to it. Untick it and the accounts still
+                                                     on that plan lose their route out. --}}
+                                                @if ($plan->trashed())
+                                                    <span class="kn-badge-amber">deleted — still has accounts</span>
+                                                @endif
+                                            </span>
                                         </label>
                                     @endforeach
                                 </div>

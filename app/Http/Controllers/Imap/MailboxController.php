@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Imap\MailboxRequest;
 use App\Jobs\Imap\SyncMailboxJob;
 use App\Models\Mailbox;
+use App\Models\Scopes\AccountScope;
 use App\Models\SmtpAccount;
 use App\Services\Imap\MailboxTester;
+use App\Services\Smtp\SmtpSelector;
 use App\Support\ActivityLogger;
 use App\Support\ImapProviders;
 use App\Support\PlanLimits;
@@ -22,6 +24,7 @@ class MailboxController extends Controller
     public function __construct(
         protected MailboxTester $tester,
         protected TenantManager $tenant,
+        protected SmtpSelector $selector,
     ) {}
 
     public function index(Request $request): View
@@ -215,11 +218,48 @@ class MailboxController extends Controller
         return [
             'mailbox' => $mailbox,
             'providers' => ImapProviders::all(),
-            'smtpAccounts' => SmtpAccount::query()
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get(['id', 'name', 'host', 'from_email']),
+            // Own accounts, plus only the platform accounts actually shared
+            // with this tenant. A plain SmtpAccount::query() looks right but is
+            // not: SmtpAccount opts into accountScopeIncludesGlobal(), so the
+            // scope adds `OR account_id IS NULL` and the list quietly becomes
+            // every platform relay on the installation — assignments and the
+            // plan's allow_admin_smtp both ignored.
+            'smtpAccounts' => $this->selectableSmtp($request),
         ];
+    }
+
+    /**
+     * The SMTP accounts this tenant may send replies through.
+     *
+     * Deliberately the same rule the campaign sender uses: its own accounts if
+     * the plan allows them, and a platform account only where an assignment
+     * reaches this tenant. Replies are outbound mail like any other, and a
+     * mailbox pointed at an unassigned platform relay would spend that relay's
+     * quota and its reputation.
+     *
+     * @return \Illuminate\Support\Collection<int, SmtpAccount>
+     */
+    protected function selectableSmtp(Request $request): \Illuminate\Support\Collection
+    {
+        $account = $request->user()->account;
+
+        if (! $account) {
+            return collect();
+        }
+
+        $limits = PlanLimits::for($account);
+
+        $own = $limits->allows('allow_custom_smtp')
+            ? SmtpAccount::withoutGlobalScope(AccountScope::class)
+                ->where('account_id', $account->id)
+                ->where('is_global', false)
+                ->where('is_active', true)
+                ->get()
+            : collect();
+
+        return $own->concat($this->selector->visibleSharedFor($account)->where('is_active', true))
+            ->sortBy('name')
+            ->values();
     }
 
     /**

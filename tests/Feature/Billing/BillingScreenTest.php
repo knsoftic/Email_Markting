@@ -288,5 +288,15 @@ class BillingScreenTest extends TestCase
 
         $this->get('/billing')->assertForbidden();
         $this->post('/billing/request', ['note' => 'hi'])->assertForbidden();
+
+        // And they are not offered the link either. Showing a menu entry whose
+        // route answers 403 is worse than hiding it: it reads as a fault in
+        // their account rather than a permission they were never given.
+        $this->get('/dashboard')->assertOk()->assertDontSee('Plan &amp; Billing', false);
+    }
+
+    public function test_a_role_with_settings_view_is_offered_the_link(): void
+    {
+        $this->get('/dashboard')->assertOk()->assertSee('Plan &amp; Billing', false);
     }
 }

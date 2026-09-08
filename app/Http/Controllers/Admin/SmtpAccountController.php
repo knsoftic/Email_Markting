@@ -86,13 +86,30 @@ class SmtpAccountController extends Controller
 
         $smtpAccount->load('assignments.plan:id,name', 'assignments.account:id,name');
 
+        $selectedPlans = $smtpAccount->assignments->where('scope', 'plan')->pluck('plan_id')->filter()->all();
+
         return view('admin.smtp.show', [
             'account' => $smtpAccount,
             'provider' => SmtpProviders::get($smtpAccount->provider),
-            'plans' => Plan::ordered()->get(['id', 'name']),
+            /*
+             * Deleted plans are offered only when this account is already
+             * assigned to one.
+             *
+             * Deleting a plan is a soft delete: it comes off the list for new
+             * accounts, and everybody already on it keeps it. The selector
+             * matches assignments on plan_id and never looks at deleted_at, so
+             * those accounts go on sending through this SMTP — but the form
+             * could not draw a checkbox for a plan it had not fetched, and
+             * updateAssignments() replaces the whole set from what was ticked.
+             * So opening this page and pressing Save, changing nothing, quietly
+             * cut off every account still on that plan.
+             */
+            'plans' => Plan::withTrashed()->ordered()
+                ->where(fn ($q) => $q->whereNull('deleted_at')->orWhereIn('id', $selectedPlans ?: [0]))
+                ->get(['id', 'name', 'deleted_at']),
             'accounts' => Account::orderBy('name')->limit(500)->get(['id', 'name']),
             'scope' => $this->currentScope($smtpAccount),
-            'selectedPlans' => $smtpAccount->assignments->where('scope', 'plan')->pluck('plan_id')->filter()->all(),
+            'selectedPlans' => $selectedPlans,
             'selectedAccounts' => $smtpAccount->assignments->where('scope', 'account')->pluck('account_id')->filter()->all(),
             'usage' => SmtpUsage::where('smtp_account_id', $smtpAccount->id)
                 ->orderByDesc('date')
@@ -159,12 +176,16 @@ class SmtpAccountController extends Controller
             'account_ids.*' => ['integer', 'exists:accounts,id'],
         ]);
 
+        // withInput() is what keeps the operator's chosen scope selected. The
+        // form reads old('scope'), so bouncing without it snapped the radio back
+        // to whatever was saved before — leaving an error that says "pick at
+        // least one plan" beside a form no longer set to plan scope.
         if ($validated['scope'] === 'plan' && empty($validated['plan_ids'])) {
-            return back()->with('error', 'Pick at least one plan, or choose a different scope.');
+            return back()->withInput()->with('error', 'Pick at least one plan, or choose a different scope.');
         }
 
         if ($validated['scope'] === 'account' && empty($validated['account_ids'])) {
-            return back()->with('error', 'Pick at least one account, or choose a different scope.');
+            return back()->withInput()->with('error', 'Pick at least one account, or choose a different scope.');
         }
 
         DB::transaction(function () use ($smtpAccount, $validated) {

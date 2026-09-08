@@ -33,7 +33,17 @@
             @if (! $canAddCustom)
                 <p class="max-w-xs text-xs text-ink-500">
                     Your plan does not include your own SMTP accounts.
-                    {{ $adminSmtpAllowed ? 'Sending uses the accounts KN Softic provides below.' : 'Contact support to enable sending.' }}
+                    {{-- Do not promise accounts "below" when none is shared: the
+                         customer reads that next to a section saying nothing has
+                         been assigned, and cannot tell which half to believe. --}}
+                    @if (! $adminSmtpAllowed)
+                        Contact support to enable sending.
+                    @elseif ($shared->isNotEmpty())
+                        Sending uses the accounts KN Softic provides below.
+                    @else
+                        Nothing has been shared with your account yet, so there is no way to send —
+                        ask KN Softic to assign you an SMTP account.
+                    @endif
                 </p>
             @elseif ($atLimit)
                 <span class="kn-badge-amber">SMTP account limit reached</span>
@@ -64,7 +74,12 @@
         </div>
     </div>
 
-    @if ($own->isEmpty() && $shared->isEmpty())
+    {{-- Only when there is genuinely nothing else to say. A tenant whose plan
+         allows the platform's own accounts must reach the section below even
+         when none has been assigned yet — otherwise the screen never mentions
+         that route exists, and "no SMTP account" reads as a fault in the
+         product rather than something an administrator has still to do. --}}
+    @if ($own->isEmpty() && $shared->isEmpty() && ! $adminSmtpAllowed)
         <div class="kn-card">
             {{-- The message has to match what this user can actually do: telling
                  someone whose plan has no sending at all to "add credentials"
@@ -91,7 +106,9 @@
         @if ($own->isEmpty())
             <div class="kn-card mb-8">
                 <x-empty-state title="You have not added your own SMTP account"
-                               message="You are sending through the accounts KN Softic provides. Add your own provider to send from your domain and control the limits yourself.">
+                               :message="$shared->isNotEmpty()
+                                   ? 'You are sending through the accounts KN Softic provides, listed below. Add your own provider to send from your domain and control the limits yourself.'
+                                   : 'Nothing has been shared with your account yet either, so there is no way to send at present. Add your own provider, or ask KN Softic to assign you one.'">
                     @if ($canShowAdd)
                         <x-slot name="action">
                             <a href="{{ route('smtp.create') }}" class="kn-btn-primary">Add SMTP account</a>

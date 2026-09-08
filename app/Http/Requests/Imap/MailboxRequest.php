@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests\Imap;
 
+use App\Models\Scopes\AccountScope;
+use App\Models\SmtpAccount;
+use App\Services\Smtp\SmtpSelector;
 use App\Support\ImapProviders;
+use App\Support\PlanLimits;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -11,6 +15,34 @@ class MailboxRequest extends FormRequest
     public function authorize(): bool
     {
         return $this->user()?->hasPermission('mailboxes.manage') ?? false;
+    }
+
+    /**
+     * The SMTP account ids this tenant may actually send through.
+     *
+     * @return list<int>
+     */
+    protected function allowedSmtpAccountIds(): array
+    {
+        $account = $this->user()?->account;
+
+        if (! $account) {
+            return [];
+        }
+
+        $limits = PlanLimits::for($account);
+
+        $own = $limits->allows('allow_custom_smtp')
+            ? SmtpAccount::withoutGlobalScope(AccountScope::class)
+                ->where('account_id', $account->id)
+                ->where('is_global', false)
+                ->pluck('id')
+                ->all()
+            : [];
+
+        $shared = app(SmtpSelector::class)->visibleSharedFor($account)->pluck('id')->all();
+
+        return array_values(array_unique([...$own, ...$shared]));
     }
 
     /**
@@ -48,12 +80,16 @@ class MailboxRequest extends FormRequest
             'imap_validate_cert' => ['boolean'],
 
             // The SMTP account replies from this mailbox go out through.
-            // Checked against this account so a crafted post cannot borrow
-            // another tenant's credentials.
+            //
+            // `is_global = true` used to be enough on its own, which let any
+            // tenant point its replies at any platform relay on the
+            // installation — no assignment, and not even allow_admin_smtp.
+            // Replies are outbound mail like everything else, so this is held
+            // to exactly the rule the campaign sender uses: own accounts if the
+            // plan allows them, and a platform account only where an assignment
+            // reaches this tenant.
             'smtp_account_id' => ['nullable', 'integer',
-                Rule::exists('smtp_accounts', 'id')
-                    ->where(fn ($q) => $q->where('account_id', $accountId)->orWhere('is_global', true))
-                    ->whereNull('deleted_at')],
+                Rule::in($this->allowedSmtpAccountIds())],
 
             'sync_enabled' => ['boolean'],
             'sync_interval_minutes' => ['required', 'integer', 'min:1', 'max:1440'],

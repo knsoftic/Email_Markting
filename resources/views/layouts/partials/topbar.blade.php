@@ -84,7 +84,9 @@
                 Profile settings
             </a>
 
-            @if (\Illuminate\Support\Facades\Route::has('billing.index'))
+            {{-- The route is behind permission:settings.view, so offering the
+                 link without the same check just routes people to a 403. --}}
+            @if (\Illuminate\Support\Facades\Route::has('billing.index') && auth()->user()?->hasPermission('settings.view'))
                 <a href="{{ route('billing.index') }}" class="block px-4 py-2 text-sm text-ink-700 hover:bg-ink-50">
                     Plan &amp; billing
                 </a>

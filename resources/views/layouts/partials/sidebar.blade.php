@@ -82,7 +82,7 @@
         [
             'label' => 'Account',
             'items' => [
-                ['label' => 'Plan & Billing', 'route' => 'billing.index', 'icon' => 'billing'],
+                ['label' => 'Plan & Billing', 'route' => 'billing.index', 'icon' => 'billing', 'permission' => 'settings.view'],
                 ['label' => 'Notifications', 'route' => 'notifications.index', 'icon' => 'bell'],
                 ['label' => 'Team', 'route' => 'team.index', 'icon' => 'contacts', 'permission' => 'team.manage'],
                 ['label' => 'Settings', 'route' => 'settings.index', 'icon' => 'settings', 'permission' => 'settings.view'],
