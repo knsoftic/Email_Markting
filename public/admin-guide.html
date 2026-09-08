@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="ur-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KN Softic Admin Panel Guide</title>
+<meta name="description" content="KN Softic super admin panel ka guide - accounts, plans, users, SMTP aur system tools, har amal ke asar ke saath.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+:root {
+    --ground: #fbfbfd;
+    --surface: #ffffff;
+    --surface-2: #f4f5fa;
+    --ink: #101426;
+    --muted: #59617a;
+    --line: #e4e7f0;
+    --line-2: #d3d8e6;
+
+    --brand: #1d4ed8;
+
+    /* Severity is information here, not decoration: an admin guide is mostly
+       about which actions you cannot take back. */
+    --safe: #0f766e;
+    --safe-soft: #e2f4f1;
+    --care: #b45309;
+    --care-soft: #fdf3e3;
+    --danger: #b91c1c;
+    --danger-soft: #fdeaea;
+
+    --shadow: 0 1px 2px rgba(16,20,38,.05), 0 8px 24px rgba(16,20,38,.06);
+
+    --display: "Newsreader", Georgia, "Times New Roman", serif;
+    --body: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+:root:not([data-theme="light"]) {
+    --ground: #0c0e15;
+    --surface: #12151f;
+    --surface-2: #171b28;
+    --ink: #e9ebf3;
+    --muted: #8f97b0;
+    --line: #232838;
+    --line-2: #2f3548;
+
+    --brand: #7d9bff;
+
+    --safe: #4ecdc0;
+    --safe-soft: #13302c;
+    --care: #e0a24a;
+    --care-soft: #33260f;
+    --danger: #f87171;
+    --danger-soft: #331616;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+}
+}
+
+:root[data-theme="dark"] {
+    --ground: #0c0e15;
+    --surface: #12151f;
+    --surface-2: #171b28;
+    --ink: #e9ebf3;
+    --muted: #8f97b0;
+    --line: #232838;
+    --line-2: #2f3548;
+
+    --brand: #7d9bff;
+
+    --safe: #4ecdc0;
+    --safe-soft: #13302c;
+    --care: #e0a24a;
+    --care-soft: #33260f;
+    --danger: #f87171;
+    --danger-soft: #331616;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+/* ------------------------------------------------------------- masthead */
+
+.masthead {
+    padding: 3.5rem 0 2.5rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2.5rem;
+}
+
+.brand-row { display: flex; align-items: center; gap: .625rem; margin-bottom: 1.75rem; }
+
+.mark {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 8px;
+    background: var(--brand); color: #fff;
+    font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .04em;
+}
+
+.brand-row span { font-weight: 600; letter-spacing: -.01em; }
+
+.eyebrow {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--care); margin-bottom: .625rem;
+}
+
+h1 {
+    font-family: var(--display);
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    font-weight: 500; line-height: 1.12; letter-spacing: -.02em;
+    margin: 0 0 .875rem; text-wrap: balance;
+}
+
+.standfirst { font-size: 1.0625rem; color: var(--muted); max-width: 62ch; margin: 0 0 2rem; }
+
+.legend { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+/* ------------------------------------------------------------ severity */
+
+.tag {
+    display: inline-flex; align-items: center; gap: .375rem;
+    padding: .3125rem .6875rem; border-radius: 999px;
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    letter-spacing: .02em; white-space: nowrap;
+}
+
+.tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.tag-safe   { background: var(--safe-soft);   color: var(--safe); }
+.tag-care   { background: var(--care-soft);   color: var(--care); }
+.tag-danger { background: var(--danger-soft); color: var(--danger); }
+
+/* --------------------------------------------------------------- layout */
+
+.columns { display: grid; gap: 3rem; }
+@media (min-width: 1040px) { .columns { grid-template-columns: 200px minmax(0, 1fr); } }
+
+.toc { align-self: start; }
+@media (min-width: 1040px) {
+    .toc { position: sticky; top: 2rem; max-height: calc(100vh - 4rem); overflow-y: auto; }
+}
+
+.toc h2 {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+    margin: 0 0 .875rem;
+}
+
+.toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .0625rem; }
+
+.toc a {
+    display: block; padding: .3125rem .5rem; border-radius: 6px;
+    font-size: .875rem; color: var(--muted); text-decoration: none;
+}
+
+.toc a:hover { color: var(--ink); background: var(--surface-2); }
+.toc a:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+
+/* -------------------------------------------------------------- content */
+
+section { scroll-margin-top: 1.5rem; }
+section + section { margin-top: 3.5rem; padding-top: 3.5rem; border-top: 1px solid var(--line); }
+
+h2.section-title {
+    font-family: var(--display); font-size: 1.75rem; font-weight: 500;
+    letter-spacing: -.015em; line-height: 1.25; margin: 0 0 .75rem; text-wrap: balance;
+}
+
+h3 { font-family: var(--body); font-size: 1rem; font-weight: 700; margin: 2rem 0 .5rem; }
+
+p { margin: 0 0 1rem; max-width: 68ch; }
+a { color: var(--brand); }
+strong { font-weight: 600; color: var(--ink); }
+
+code {
+    font-family: var(--mono); font-size: .8125em;
+    background: var(--surface-2); border: 1px solid var(--line);
+    border-radius: 4px; padding: .0625rem .3125rem;
+}
+
+ol.steps {
+    counter-reset: step; list-style: none; margin: 0 0 1.5rem; padding: 0;
+    display: flex; flex-direction: column; gap: .625rem; max-width: 68ch;
+}
+
+ol.steps > li { counter-increment: step; position: relative; padding-left: 2.125rem; }
+
+ol.steps > li::before {
+    content: counter(step); position: absolute; left: 0; top: .1875rem;
+    width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; background: var(--surface-2); border: 1px solid var(--line-2);
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+}
+
+ul.plain { margin: 0 0 1.5rem; padding-left: 1.125rem; max-width: 68ch; }
+ul.plain li { margin-bottom: .375rem; }
+
+/* --------------------------------------------------------------- figure */
+
+figure { margin: 1.75rem 0 0; }
+
+figure img {
+    display: block; width: 100%; height: auto;
+    border: 1px solid var(--line-2); border-radius: 10px;
+    box-shadow: var(--shadow); background: var(--surface);
+}
+
+figcaption { margin-top: .625rem; font-size: .8125rem; color: var(--muted); max-width: 68ch; }
+
+/* ----------------------------------------------------------------- note */
+
+.note {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: .75rem;
+    row-gap: .5rem;
+    align-items: start;
+    padding: .875rem 1rem; border-radius: 8px;
+    background: var(--surface-2); border: 1px solid var(--line);
+    margin: 0 0 1.5rem; max-width: 68ch; font-size: .9375rem;
+}
+
+.note .lbl {
+    grid-column: 1; grid-row: 1; font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-top: .25rem;
+}
+
+.note p { grid-column: 2; margin: 0; }
+
+
+.note-care   { background: var(--care-soft);   border-color: color-mix(in srgb, var(--care) 25%, transparent); }
+.note-care .lbl { color: var(--care); }
+
+.note-danger { background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 30%, transparent); }
+.note-danger .lbl { color: var(--danger); }
+
+/* ---------------------------------------------------------------- table */
+
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+
+table { width: 100%; border-collapse: collapse; font-size: .875rem; min-width: 560px; }
+
+th, td { padding: .625rem .875rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+
+thead th {
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+    background: var(--surface-2); white-space: nowrap;
+}
+
+tbody tr:last-child td { border-bottom: 0; }
+
+.colophon {
+    margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--line);
+    font-size: .8125rem; color: var(--muted); max-width: 68ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+    <div class="brand-row"><span class="mark">KN</span><span>KN Softic</span></div>
+
+    <p class="eyebrow">Super Admin</p>
+
+    <h1>Platform chalane wale ke liye</h1>
+
+    <p class="standfirst">
+        Admin panel ka har screen — accounts, plans, users, SMTP, settings aur system tools.
+        Har amal ke saath likha hai ke customer par uska kya asar parhta hai aur woh wapas
+        ho sakta hai ya nahi.
+    </p>
+
+    <div class="legend">
+        <span class="tag tag-safe">Mehfooz — wapas ho sakta hai</span>
+        <span class="tag tag-care">Ehtiyat — customer par foran asar</span>
+        <span class="tag tag-danger">Wapas nahi ho sakta</span>
+    </div>
+</header>
+
+<div class="columns">
+
+<nav class="toc" aria-label="Sections">
+    <h2>Fehrist</h2>
+    <ol>
+        <li><a href="#dakhil">Andar jana</a></li>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#accounts">Accounts</a></li>
+        <li><a href="#suspend">Suspend karna</a></li>
+        <li><a href="#plan-badalna">Plan badalna</a></li>
+        <li><a href="#overrides">Limit overrides</a></li>
+        <li><a href="#plans">Plans</a></li>
+        <li><a href="#users">Users</a></li>
+        <li><a href="#impersonate">Log in as</a></li>
+        <li><a href="#roles">Roles</a></li>
+        <li><a href="#smtp">Admin SMTP</a></li>
+        <li><a href="#branding">Branding</a></li>
+        <li><a href="#system-settings">System settings</a></li>
+        <li><a href="#payment">Payment settings</a></li>
+        <li><a href="#health">System health</a></li>
+        <li><a href="#queue">Queue</a></li>
+        <li><a href="#activity">Activity log</a></li>
+        <li><a href="#rozana">Rozana kaam</a></li>
+    </ol>
+</nav>
+
+<main>
+
+<!-- ============================================================== dakhil -->
+<section id="dakhil">
+    <h2 class="section-title">Andar jana</h2>
+
+    <p>
+        Aam login screen se hi sign in karein. Agar aap ka account super admin hai to sidebar
+        mein <strong>Super Admin</strong> ka badge dikhega aur panel <code>/admin</code> par
+        khulta hai.
+    </p>
+
+    <div class="note note-danger">
+        <span class="lbl">Sab se pehle</span>
+        <p>
+            Server par pehli baar aane ke baad <strong>super admin ka password foran badlein</strong>.
+            Seeder use <code>.env</code> ki <code>KNS_ADMIN_PASSWORD</code> se leta hai, aur woh
+            placeholder public repository mein likha hua hai.
+        </p>
+        <p>
+            Server par: <code>php artisan kn:admin-password</code> — typing chhupi rehti hai,
+            aur wahi password policy lagti hai jo baqi sab par hai.
+        </p>
+    </div>
+
+    <p>
+        Super admin ka koi tenant nahi hota. Isi liye woh har account ka data dekh sakta hai —
+        aur isi liye ye account sab se ehtiyat wala hai.
+    </p>
+</section>
+
+<!-- ============================================================ overview -->
+<section id="overview">
+    <h2 class="section-title">Overview</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-safe">Sirf parhne ke liye</span></div>
+
+    <p>Platform ka pehla screen. Kul accounts, users, contacts, campaigns aur bheje gaye email.</p>
+
+    <div class="note note-care">
+        <span class="lbl">Ghalat parhne ki jagah</span>
+        <p>
+            Yahan ke <strong>saare numbers install ke din se ab tak ke hain</strong> — "is mahine" ke
+            nahi. Sirf neeche ke do charts 14 din ke hain.
+        </p>
+        <p>
+            Aur ye ginti har jagah ek jaisi nahi: kuch cards delete ki hui rows bhi ginte hain, kuch
+            nahi. Kisi customer ka asli istemal dekhna ho to us ke apne account page par jayein —
+            wahan wohi ginti hai jis par plan ki had lagti hai.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/admin-guide-img/a01-dashboard.webp" alt="Admin overview" loading="lazy">
+        <figcaption>Overview. Numbers all-time hain; charts pichle 14 din ke.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================ accounts -->
+<section id="accounts">
+    <h2 class="section-title">Accounts</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-safe">Dekhna aur dhoondna</span></div>
+
+    <p>
+        Har account ek alag tenant hai — apna data, apne users, apni limits. List mein naam, owner,
+        plan, users, contacts, campaigns aur status dikhta hai. Upar se naam ya owner ke email se
+        dhoond sakte hain, aur status ya plan se filter kar sakte hain.
+    </p>
+
+    <p>
+        <strong>Manage</strong> par click kar ke us account ka poora page khulta hai: paanch cards,
+        account ki tafseel, subscription, aur per-account limit overrides.
+    </p>
+
+    <div class="note">
+        <span class="lbl">Note</span>
+        <p>
+            Yahan se naya account <strong>nahi</strong> banta. Account ya to customer khud register
+            kar ke banata hai, ya aap <strong>Users → New user</strong> se banate hain — wahan naya
+            user banane par uska account bhi ban jata hai.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/admin-guide-img/a02-accounts.webp" alt="Accounts list" loading="lazy">
+        <figcaption>Accounts. Status ka badge sirf "Active" par sabz hota hai.</figcaption>
+    </figure>
+
+    <figure>
+        <img src="/admin-guide-img/a03-account-detail.webp" alt="Account detail" loading="lazy">
+        <figcaption>Ek account ka page. Cards live ginti hain — customer ne jo delete kiya woh nahi ginte.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================= suspend -->
+<section id="suspend">
+    <h2 class="section-title">Account suspend karna</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-care">Foran asar — magar wapas ho sakta hai</span></div>
+
+    <p>
+        Suspend karne par us account ke saare users <strong>agli hi request par logout</strong> ho jate
+        hain aur dobara login nahi kar sakte. Data kahin nahi jata.
+    </p>
+
+    <p>Aur is ke saath ye sab bhi ruk jata hai:</p>
+
+    <ul class="plain">
+        <li>Chalta hua campaign wahin ruk jata hai — <strong>fail nahi hota</strong>, ruk jata hai.</li>
+        <li>Scheduled campaigns scheduled hi rehte hain, jate nahi.</li>
+        <li>Automations aage nahi barhtin.</li>
+        <li>Mailbox sync band ho jati hai.</li>
+    </ul>
+
+    <p>
+        Activate karte hi ye sab wahin se chal parta hai jahan ruka tha. Sirf woh log jo logout ho
+        gaye thay, unhein dobara login karna parhta hai.
+    </p>
+
+    <div class="note note-care">
+        <span class="lbl">Ehtiyat</span>
+        <p>
+            <strong>"Pending" bhi bilkul suspended jaisa hai.</strong> Account tab tak kaam nahi
+            karta jab tak status theek <em>Active</em> na ho. Naya account "pending" par ho to
+            customer ko lagta hai kuch kharab hai — status dekh lein.
+        </p>
+    </div>
+</section>
+
+<!-- ======================================================== plan-badalna -->
+<section id="plan-badalna">
+    <h2 class="section-title">Plan badalna aur barhana</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-care">Foran asar</span></div>
+
+    <p>
+        Account ke page par dayen taraf <strong>Subscription</strong> ka card hai. Wahan se plan
+        badlein, status (trial / active / expired / cancelled) chunein, expiry date dein, ya
+        <strong>Extend by (days)</strong> mein dinon ka number likh kar date aage barha dein.
+    </p>
+
+    <ol class="steps">
+        <li>Naya plan chunein.</li>
+        <li>Status chunein — paisay mil gaye to <strong>Active</strong>.</li>
+        <li>Expiry date dein, ya dinon mein extend karein.</li>
+        <li><strong>Internal note</strong> mein likh dein ke kyun — ye sirf aap dekhte hain.</li>
+        <li><strong>Update subscription</strong>.</li>
+    </ol>
+
+    <p>
+        Nayi limits <strong>foran</strong> lag jati hain — customer ko dobara login karne ki zaroorat
+        nahi.
+    </p>
+
+    <div class="note">
+        <span class="lbl">Note</span>
+        <p>
+            Agar naye plan ki had customer ke maujooda istemal se <em>kam</em> hai, to uska data
+            delete nahi hota. Bas woh us had se aage nahi barh sakta jab tak neeche na aa jaye.
+        </p>
+        <p>
+            Aur agar us par per-account overrides lagay huay thay, to woh <strong>saath chale jate
+            hain</strong> — screen aap ko bata deti hai ke kitne rakhe gaye.
+        </p>
+    </div>
+</section>
+
+<!-- =========================================================== overrides -->
+<section id="overrides">
+    <h2 class="section-title">Limit overrides — ek customer ke liye alag had</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-care">Foran asar</span></div>
+
+    <p>
+        Kabhi kisi ek customer ko plan se zyada dena hota hai — bina naya plan banaye. Account ke
+        page par <strong>Per-account limit overrides</strong> isi ke liye hai.
+    </p>
+
+    <p>
+        Har khaana <strong>khaali chhorna</strong> ka matlab: "plan ka apna number use karo".
+        Number likhna: "is customer ke liye yehi number".
+    </p>
+
+    <div class="note note-care">
+        <span class="lbl">Yaad rakhein</span>
+        <p>
+            <strong>Khaali aur 0 ek cheez nahi hain.</strong> Khaali = plan ka number.
+            <strong>0 = us feature ko bilkul band kar do.</strong> Aur kuch jagah khaali ka matlab
+            "bay-hisab" bhi ho sakta hai — number likhne se pehle plan ki value dekh lein.
+        </p>
+    </div>
+</section>
+
+<!-- =============================================================== plans -->
+<section id="plans">
+    <h2 class="section-title">Plans</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-danger">Har us account par foran asar jo is plan par hai</span></div>
+
+    <p>
+        Plan tay karta hai ke customer kya kar sakta hai: kitne contacts, kitne email, kitne
+        mailboxes, aur kaun se features (automations, segments, A/B testing, apna SMTP).
+    </p>
+
+    <div class="note note-danger">
+        <span class="lbl">Sab se ahem</span>
+        <p>
+            Plan edit karte hi woh tabdeeli <strong>us par baithe har account par foran</strong> lag
+            jati hai. Screen ye nahi batati ke kitne accounts is plan par hain — pehle
+            <strong>Plans</strong> list par "Subscribers" column dekh lein.
+        </p>
+        <p>
+            Misal: <code>max_emails_per_month</code> ko us number se neeche karna jo customer is
+            mahine pehle hi bhej chuka hai, uske chalte huay campaign ko wahin rok dega.
+        </p>
+    </div>
+
+    <h3>Khaali khaana = bay-hisab</h3>
+
+    <p>
+        Naya plan banate waqt har limit ka khaana khaali hota hai. Agar aap Limits card ko haath na
+        lagayein, to woh plan <strong>har cheez mein bay-hisab</strong> ban jayega — sifar wala nahi.
+        Har khaane mein number likhein.
+    </p>
+
+    <div class="note note-care">
+        <span class="lbl">Ehtiyat</span>
+        <p>
+            <code>allow_custom_smtp</code> aur <code>allow_admin_smtp</code> <strong>dono</strong>
+            band kar dene se us plan ke customers ke paas bhejne ka koi raasta nahi bachta.
+        </p>
+    </div>
+
+    <p>
+        Plan delete karna soft delete hai: woh list se hat jata hai (yani naye accounts ko nahi diya
+        ja sakta), magar jo accounts pehle se us par hain unki limits waise hi chalti rehti hain jab
+        tak aap unhein kisi aur plan par na le jayein.
+    </p>
+
+    <figure>
+        <img src="/admin-guide-img/a04-plans.webp" alt="Plans" loading="lazy">
+        <figcaption>Plans. "Subscribers" column batata hai ke kis plan par kitne accounts hain — edit se pehle yehi dekhein.</figcaption>
+    </figure>
+
+    <figure>
+        <img src="/admin-guide-img/a05-plan-edit.webp" alt="Plan form" loading="lazy">
+        <figcaption>Plan ka form. Limits aur feature switches — khaali khaana bay-hisab hai.</figcaption>
+    </figure>
+</section>
+
+<!-- =============================================================== users -->
+<section id="users">
+    <h2 class="section-title">Users</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-care">Kisi ka access band ya khol sakta hai</span></div>
+
+    <p>
+        Platform ke saare log — har account ke, aur super admins bhi. Naam ya email se dhoondein,
+        account ya status se filter karein.
+    </p>
+
+    <h3>Naya user banana</h3>
+
+    <p>
+        <strong>New user</strong> se banaya gaya user apne <strong>naye account</strong> mein jata hai —
+        kisi maujooda account mein nahi. Yani ye "customer banana" hai.
+    </p>
+
+    <ol class="steps">
+        <li>Naam, email aur password dein — password 10 harf ka, harf aur number dono ke saath.</li>
+        <li>Company ka naam dein — yehi account ka naam banega.</li>
+        <li>Plan chunein.</li>
+        <li><strong>Mark email address as verified</strong> tick kar dein, warna woh pehle login par verification screen par atkega.</li>
+    </ol>
+
+    <div class="note">
+        <span class="lbl">Note</span>
+        <p>
+            Password unhein <strong>email nahi hota</strong> — aap ko khud bhejna parhega.
+            Aur email address poore platform mein ek hi baar istemal ho sakta hai.
+        </p>
+    </div>
+
+    <div class="note note-care">
+        <span class="lbl">Deactivate aur Delete ka farq</span>
+        <p>
+            <strong>Suspend</strong>: login band, data mojood, kabhi bhi wapas kholein.
+            <strong>Delete</strong>: user chhup jata hai magar uski activity ka record rehta hai.
+            Apna account na aap suspend kar sakte hain na delete — panel mana kar deta hai.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/admin-guide-img/a07-users.webp" alt="Users" loading="lazy">
+        <figcaption>Users. Har row par account aur role dikhta hai.</figcaption>
+    </figure>
+
+    <figure>
+        <img src="/admin-guide-img/a08-user-new.webp" alt="New user" loading="lazy">
+        <figcaption>Naya user — aur uska naya account.</figcaption>
+    </figure>
+</section>
+
+<!-- ========================================================= impersonate -->
+<section id="impersonate">
+    <h2 class="section-title">"Log in as" — customer ban kar dekhna</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-danger">Aap us customer ka sab kuch dekh aur kar sakte hain</span></div>
+
+    <p>
+        Customer kahe "mujhe ye screen aisi dikh rahi hai" — to uske user par jayein aur
+        <strong>Log in as</strong> dabayein. Aap bilkul wahi dekhenge jo woh dekhta hai.
+    </p>
+
+    <p>
+        Wapas aane ke liye upar <strong>Stop impersonating</strong>.
+    </p>
+
+    <div class="note note-danger">
+        <span class="lbl">Jaan lein</span>
+        <p>
+            Is dauran aap us customer ke <strong>contacts, campaigns aur inbox sab parh sakte hain
+            — aur badal bhi sakte hain</strong>. App ke liye us waqt aap wohi customer hain.
+        </p>
+        <p>
+            Aur isi wajah se: jo bhi aap us dauran karenge, woh <strong>us customer ke naam se</strong>
+            uski apni activity log mein likha jayega — aap ke naam se nahi. Shuru aur khatam hone ka
+            record admin activity log mein rehta hai, magar beech ka kaam customer ke khatay mein.
+            Is liye sirf dekhne ke liye istemal karein, kaam karne ke liye nahi.
+        </p>
+    </div>
+
+    <div class="note">
+        <span class="lbl">Note</span>
+        <p>
+            Doosre super admin ko impersonate nahi kiya ja sakta. Suspended user ya suspended
+            account ko bhi nahi.
+        </p>
+    </div>
+</section>
+
+<!-- =============================================================== roles -->
+<section id="roles">
+    <h2 class="section-title">Roles &amp; Permissions</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-care">Har us shakhs par asar jo ye role rakhta hai</span></div>
+
+    <p>
+        Teen role pehle se bane huay hain: <strong>Super Admin</strong>, <strong>Account Owner</strong>
+        aur <strong>Staff</strong>. Pehle do ke paas hamesha sab kuch hota hai aur unhein badla nahi ja
+        sakta — panel ki matrix un par band rehti hai.
+    </p>
+
+    <p>
+        <strong>Staff</strong> badla ja sakta hai, aur yahan badalna <strong>har account ke</strong>
+        staff par lagta hai. Woh shuru mein sirf paanch cheezein dekh sakta hai: contacts, campaigns,
+        templates, inbox aur analytics.
+    </p>
+
+    <div class="note note-care">
+        <span class="lbl">Ehtiyat</span>
+        <p>
+            Form mein koi bhi box tick kiye baghair save karna jaiz hai — aur us role se
+            <strong>saari permissions hat jati hain</strong>. Save se pehle matrix dekh lein.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/admin-guide-img/a09-roles.webp" alt="Roles" loading="lazy">
+        <figcaption>Roles. System roles par taala hai; Staff qabil-e-tabdeeli hai.</figcaption>
+    </figure>
+
+    <figure>
+        <img src="/admin-guide-img/a10-role-edit.webp" alt="Permission matrix" loading="lazy">
+        <figcaption>Permission matrix. Har module ke saamne dekhna, banana, badalna aur mitana alag alag hain.</figcaption>
+    </figure>
+</section>
+
+<!-- ================================================================ smtp -->
+<section id="smtp">
+    <h2 class="section-title">Admin SMTP — mushtarka bhejne ka raasta</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-danger">Bhejne ka raasta — ghalat setting sab ka bhejna rok deti hai</span></div>
+
+    <p>
+        Kuch customers apna SMTP nahi lagate — jaise Starter plan wale, jinhein ijazat hi nahi.
+        Un ka email <strong>aap ke diye hue</strong> SMTP account se jata hai. Wohi yahan banate hain.
+    </p>
+
+    <ol class="steps">
+        <li><strong>Admin SMTP → Add</strong>.</li>
+        <li>Host, port, username aur password bharein.</li>
+        <li>Ghanta, din aur mahine ki had likhein — provider ki apni limit se neeche.</li>
+        <li><strong>Test</strong> dabayein — ye asli connection banata hai.</li>
+        <li>Save ke baad <strong>assignment</strong> zaroor karein.</li>
+    </ol>
+
+    <div class="note note-danger">
+        <span class="lbl">Sab se aam ghalti</span>
+        <p>
+            Naya SMTP account bana kar <strong>assignment na karna</strong>. Woh live to hota hai
+            magar us tak kisi ka raasta nahi hota — list par "Reaching nobody" likha aata hai.
+            Assignment se hi tay hota hai ke ye kis plan ya kis account ke liye hai.
+        </p>
+        <p>
+            Aur assignment save karte waqt: woh <strong>poori list badal deta hai</strong>, us mein
+            jorhta nahi. Save se pehle dekh lein ke jo pehle se chuna hua tha woh abhi bhi chuna hua hai.
+        </p>
+    </div>
+
+    <div class="note note-care">
+        <span class="lbl">Cooldown</span>
+        <p>
+            Lagatar nakami par account khud thandey mein chala jata hai aur kuch der bhejta nahi.
+            Password theek karne <strong>se woh khud nahi khulta</strong> — <strong>Clear cooldown</strong>
+            dabayein ya Test chalayein.
+        </p>
+    </div>
+
+    <p>
+        Had poori hone par bhejna <strong>rukta hai, fail nahi hota</strong>. Agli window khulte hi
+        khud chal parta hai.
+    </p>
+
+    <figure>
+        <img src="/admin-guide-img/a11-smtp.webp" alt="Admin SMTP" loading="lazy">
+        <figcaption>Admin SMTP. "Reaching nobody" us account par jise koi assignment nahi mila.</figcaption>
+    </figure>
+
+    <figure>
+        <img src="/admin-guide-img/a12-smtp-new.webp" alt="New SMTP" loading="lazy">
+        <figcaption>Naya SMTP. Port aur encryption alag alag khaane hain — 465 ke saath SSL, 587 ke saath TLS.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================ branding -->
+<section id="branding">
+    <h2 class="section-title">Branding</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-care">Har customer ki screen par dikhta hai</span></div>
+
+    <p>
+        Product ka naam, logo, favicon aur rang. Ye <strong>poore platform</strong> ke liye ek hi
+        hai — har customer ko yehi dikhta hai. Har account ka alag logo nahi ho sakta.
+    </p>
+
+    <div class="note">
+        <span class="lbl">Note</span>
+        <p>
+            Branding customers ke <strong>bheje huay emails par nahi jati</strong>. Woh email customer
+            ke apne blocks se bante hain aur us mein us ki apni company ka naam aata hai. Branding
+            sirf app ki screens par hai.
+        </p>
+    </div>
+
+    <div class="note note-care">
+        <span class="lbl">Ehtiyat</span>
+        <p>
+            Naya logo upload karte hi <strong>purana file mit jati hai</strong> — koi confirmation
+            nahi, aur wapas nahi milti. Apni asli file kahin aur sambhal kar rakhein.
+        </p>
+        <p>
+            PNG, JPG ya WebP chalti hain. <strong>SVG jaan boojh kar nahi</strong>: SVG mein script
+            ho sakti hai aur ye file har logged-in shakhs ko serve hoti hai.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/admin-guide-img/a13-branding.webp" alt="Branding" loading="lazy">
+        <figcaption>Branding. Khaali chhora hua text khaali hi rehta hai — default wapas nahi aata.</figcaption>
+    </figure>
+</section>
+
+<!-- ===================================================== system-settings -->
+<section id="system-settings">
+    <h2 class="section-title">System settings</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-care">Naye aur mojooda users par asar</span></div>
+
+    <p>
+        Naye sign-ups khule hain ya band, naya account kis plan par aata hai, aur email verification
+        zaroori hai ya nahi.
+    </p>
+
+    <div class="note note-care">
+        <span class="lbl">Ehtiyat</span>
+        <p>
+            <strong>Email verification on karna</strong> woh ek setting hai jo pehle se logged-in
+            logon ko beech kaam mein rok deti hai — agle page par unhein verification screen mil
+            jayegi.
+        </p>
+        <p>
+            Aur <strong>registration band karne se uske links chhupte nahi</strong>. Login page par
+            "Create one" abhi bhi dikhega; dabane par mana kar dega.
+        </p>
+    </div>
+
+    <p>
+        Neeche <strong>Environment values</strong> ka card sirf dikhane ke liye hai — woh
+        <code>.env</code> se aata hai aur yahan se badla nahi ja sakta.
+    </p>
+
+    <figure>
+        <img src="/admin-guide-img/a15-system.webp" alt="System settings" loading="lazy">
+        <figcaption>System settings. Default plan wahi list karta hai jo plans active hain.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================= payment -->
+<section id="payment">
+    <h2 class="section-title">Payment settings</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-safe">Sirf aap ke apne record ke liye</span></div>
+
+    <div class="note note-care">
+        <span class="lbl">Saaf baat</span>
+        <p>
+            <strong>Ye screen paisay nahi leti.</strong> Is product mein koi payment gateway nahi
+            hai, aur ye tafseelat customers ko kahin dikhayi nahi jatin. Ye sirf aap ke apne record
+            ke liye hain, taake aap ki shartein ek jagah likhi rahein.
+        </p>
+    </div>
+
+    <p>
+        Paisay product se bahar aate hain — bank transfer, cash, jo bhi aap ka tareeqa ho. Customer
+        ka access asal mein <strong>Accounts</strong> par plan assign ya extend karne se badalta hai,
+        yahan kuch bharne se nahi.
+    </p>
+
+    <figure>
+        <img src="/admin-guide-img/a14-payment.webp" alt="Payment settings" loading="lazy">
+        <figcaption>Payment settings. Screen khud bata deti hai ke woh kya nahi karti.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================== health -->
+<section id="health">
+    <h2 class="section-title">System health</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-safe">Dekhna mehfooz — magar ek button ehtiyat maangta hai</span></div>
+
+    <p>
+        Database, cache, storage aur queue theek hain ya nahi. Kuch bhi ajeeb lage to pehle yahan
+        dekhein.
+    </p>
+
+    <div class="note">
+        <span class="lbl">Badge se zyada tafseel parhein</span>
+        <p>
+            <strong>Storage: Attention</strong> aksar sirf ye kehta hai ke <code>storage:link</code>
+            nahi chala — disk bilkul theek ho sakti hai. Neeche wali line asal baat batati hai.
+        </p>
+        <p>
+            <strong>IMAP client: Healthy</strong> ka matlab sirf itna hai ke library lagi hui hai.
+            Ye kisi customer ke mailbox se connection ki zamanat nahi.
+        </p>
+    </div>
+
+    <div class="note note-care">
+        <span class="lbl">Clear caches</span>
+        <p>
+            Ye kuch poochhta nahi. Production par woh cache mit jati hai jo deploy ke waqt banti hai,
+            aur panel mein use dobara banane ka koi button nahi — server par
+            <code>bash deploy.sh</code> chalana parhta hai. Login throttling bhi reset ho jati hai.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/admin-guide-img/a16-health.webp" alt="System health" loading="lazy">
+        <figcaption>System health.</figcaption>
+    </figure>
+</section>
+
+<!-- =============================================================== queue -->
+<section id="queue">
+    <h2 class="section-title">Queue</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-danger">"Clear failed jobs" wapas nahi hota</span></div>
+
+    <p>
+        Campaign bhejna, imports, mailbox sync aur automations — sab queue se chalte hain. Ye screen
+        batati hai ke kitna kaam intezaar mein hai aur kitna nakaam hua.
+    </p>
+
+    <div class="note note-care">
+        <span class="lbl">Worker chal raha hai ya nahi</span>
+        <p>
+            <strong>"In progress: 0" ka matlab worker band hona nahi hai</strong> — khali queue par
+            worker kuch uthata hi nahi. Asal ishara <strong>amber patti</strong> hai, jo tab aati hai
+            jab kaam intezaar mein ho magar koi utha na raha ho. Wohi worker band hone ki nishani hai.
+        </p>
+    </div>
+
+    <div class="note note-danger">
+        <span class="lbl">Clear failed jobs</span>
+        <p>
+            Ye <strong>saare</strong> nakaam jobs hamesha ke liye mita deta hai — sirf screen par
+            dikhne wale 25 nahi. Us ke baad na unhein dobara chalaya ja sakta hai na wajah dekhi ja
+            sakti hai. <strong>Pehle list parhein</strong>, phir mitayein.
+        </p>
+    </div>
+
+    <div class="note note-care">
+        <span class="lbl">Retry all failed</span>
+        <p>
+            Ye bina poochhe chal parta hai, aur poore platform ke nakaam jobs par lagta hai. Agar asal
+            wajah abhi theek nahi hui (galat SMTP password, band mailbox), to woh sab dobara nakaam ho
+            kar wapas aa jayenge. <strong>Pehle wajah theek karein, phir retry.</strong>
+        </p>
+    </div>
+
+    <figure>
+        <img src="/admin-guide-img/a17-queue.webp" alt="Queue status" loading="lazy">
+        <figcaption>Queue. Do panels ke numbers thora alag ho sakte hain — ek reserved jobs bhi ginta hai.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================ activity -->
+<section id="activity">
+    <h2 class="section-title">Activity log</h2>
+    <div class="legend" style="margin-bottom:1.25rem"><span class="tag tag-safe">Sirf parhne ke liye — mitaya nahi ja sakta</span></div>
+
+    <p>
+        Poore platform mein kis ne kya kiya. Account, event ya tareekh se filter karein.
+    </p>
+
+    <div class="note">
+        <span class="lbl">Note</span>
+        <p>
+            Ye log <strong>na mitaya ja sakta hai na export</strong> — panel se aisa koi raasta nahi,
+            aur yehi baat use qabil-e-etibaar banati hai. Rows sirf tab jati hain jab poora account
+            database se hi mita diya jaye.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/admin-guide-img/a18-activity.webp" alt="Activity log" loading="lazy">
+        <figcaption>Platform activity log.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================== rozana -->
+<section id="rozana">
+    <h2 class="section-title">Rozana kaam</h2>
+
+    <div class="table-scroll">
+        <table>
+            <thead><tr><th>Kaam</th><th>Kahan</th><th>Kya dhyan rakhein</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td>Naya customer banana</td>
+                    <td>Users → New user</td>
+                    <td>Company ka naam account banata hai. Password khud bhejna parhega.</td>
+                </tr>
+                <tr>
+                    <td>Paisay aa gaye — plan chalu karo</td>
+                    <td>Accounts → Manage → Subscription</td>
+                    <td>Status "Active", expiry date, aur note likh dein.</td>
+                </tr>
+                <tr>
+                    <td>Paisay nahi aaye</td>
+                    <td>Accounts → Suspend</td>
+                    <td>Bhejna bhi ruk jata hai. Wapas activate karne par wahin se chalta hai.</td>
+                </tr>
+                <tr>
+                    <td>Ek customer ko thori zyada had</td>
+                    <td>Account page → Limit overrides</td>
+                    <td>Khaali = plan ka number. 0 = band.</td>
+                </tr>
+                <tr>
+                    <td>Customer kehta hai screen kharab hai</td>
+                    <td>Users → Log in as</td>
+                    <td>Sirf dekhein. Jo karenge woh unke naam likha jayega.</td>
+                </tr>
+                <tr>
+                    <td>"Email nahi ja rahe"</td>
+                    <td>Queue → phir Admin SMTP</td>
+                    <td>Amber patti = worker band. Warna SMTP cooldown ya limit dekhein.</td>
+                </tr>
+                <tr>
+                    <td>Naya shared SMTP</td>
+                    <td>Admin SMTP → Add</td>
+                    <td>Test karein, phir <strong>assignment zaroor</strong> — warna kisi tak nahi pohanchta.</td>
+                </tr>
+                <tr>
+                    <td>Qeematein badalni hain</td>
+                    <td>Plans</td>
+                    <td>Pehle "Subscribers" column dekhein — tabdeeli sab par foran lagti hai.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<footer class="colophon">
+    <p>
+        Ye guide asli admin panel se banai gayi hai. Screens aap ke install ki branding ke mutabiq
+        thori mukhtalif dikh sakti hain.
+    </p>
+    <p>KN Softic — Super Admin</p>
+</footer>
+
+</main>
+</div>
+</div>
+</body>
+</html>

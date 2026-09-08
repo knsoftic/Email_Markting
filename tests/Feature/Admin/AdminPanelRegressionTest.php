@@ -381,4 +381,23 @@ class AdminPanelRegressionTest extends TestCase
         $this->assertNotSame('scheduled', $campaign->fresh()->status,
             'Once the account is active again the scheduler must pick the campaign up.');
     }
+
+    // ------------------------------------------------------------ the guide
+
+    /**
+     * The operator's guide explains how to suspend an account, how to sign in
+     * as a customer, and which buttons cannot be undone. It sits behind the
+     * same gate as the panel it describes — the customer-facing guide at /guide
+     * is the public one.
+     */
+    public function test_the_admin_guide_is_for_super_admins_only(): void
+    {
+        $this->get('/admin/guide')->assertOk()->assertSee('Platform chalane wale ke liye');
+
+        $this->actingAs($this->owner);
+        $this->get('/admin/guide')->assertForbidden();
+
+        auth()->logout();
+        $this->get('/admin/guide')->assertRedirect();
+    }
 }

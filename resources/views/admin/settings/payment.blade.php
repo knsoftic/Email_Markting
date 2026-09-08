@@ -45,7 +45,7 @@
         <div class="kn-card">
             <div class="kn-card-header">
                 <h3 class="text-sm font-semibold text-ink-900">Manual payment details</h3>
-                <span class="text-xs text-ink-500">Shown on the account billing page</span>
+                <span class="text-xs text-ink-500">For your reference only</span>
             </div>
             <div class="space-y-5 p-5">
                 <div>

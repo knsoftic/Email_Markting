@@ -95,3 +95,26 @@ Route::post('smtp/{smtpAccount}/test', [AdminSmtpController::class, 'test'])->na
 Route::patch('smtp/{smtpAccount}/status', [AdminSmtpController::class, 'toggleStatus'])->name('smtp.status');
 Route::post('smtp/{smtpAccount}/reset-cooldown', [AdminSmtpController::class, 'resetCooldown'])->name('smtp.reset-cooldown');
 Route::delete('smtp/{smtpAccount}', [AdminSmtpController::class, 'destroy'])->name('smtp.destroy');
+
+/*
+|--------------------------------------------------------------------------
+| The operator's guide
+|--------------------------------------------------------------------------
+| Behind the same super.admin gate as the rest of this file, and deliberately
+| so: it explains how to suspend an account, how to sign in as a customer, and
+| which buttons cannot be undone. That is an internal document, not a public
+| one — the customer-facing guide lives at /guide and is open to anybody.
+|
+| A plain file rather than a Blade view: the guide's own text contains
+| {{first_name}} and {{company_name}} as example placeholders, and Blade would
+| try to evaluate them.
+*/
+Route::get('guide', function () {
+    $path = public_path('admin-guide.html');
+
+    abort_unless(is_file($path), 404);
+
+    return response(file_get_contents($path), 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+    ]);
+})->name('guide');

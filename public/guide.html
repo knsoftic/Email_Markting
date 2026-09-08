@@ -373,8 +373,11 @@ figcaption {
 /* ----------------------------------------------------------------- note */
 
 .note {
-    display: flex;
-    gap: .75rem;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: .75rem;
+    row-gap: .5rem;
+    align-items: start;
     padding: .875rem 1rem;
     border-radius: 8px;
     background: var(--surface-2);
@@ -385,7 +388,8 @@ figcaption {
 }
 
 .note .tag {
-    flex-shrink: 0;
+    grid-column: 1;
+    grid-row: 1;
     font-family: var(--mono);
     font-size: 10px;
     font-weight: 700;
@@ -395,8 +399,8 @@ figcaption {
     padding-top: .25rem;
 }
 
-.note p { margin: 0; }
-.note p + p { margin-top: .5rem; }
+.note p { grid-column: 2; margin: 0; }
+
 
 .note-warn {
     background: var(--warn-soft);
