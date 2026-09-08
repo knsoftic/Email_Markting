@@ -23,11 +23,34 @@ Route::get('/', fn () => view('welcome'))->name('home');
 | per-recipient URL into a search index, and recording a tracking "open" for
 | somebody who never opened anything.
 */
+/*
+| The user guide. A plain file in public/ rather than a Blade view, because the
+| guide's own text contains {{first_name}} as an example placeholder — Blade
+| would try to evaluate it and the page would die on its own documentation.
+|
+| Public on purpose: somebody evaluating the product, or stuck on a screen they
+| have not signed in to yet, should be able to read it.
+*/
+Route::get('guide', function () {
+    $path = public_path('guide.html');
+
+    abort_unless(is_file($path), 404);
+
+    // Read and returned rather than response()->file(): a file response streams,
+    // so the security-headers middleware and the test suite both see an empty
+    // body. At 42 KB that costs nothing, and it means the guide carries the same
+    // headers as every other page.
+    return response(file_get_contents($path), 200, [
+        'Content-Type' => 'text/html; charset=UTF-8',
+    ]);
+})->name('guide');
+
 Route::get('robots.txt', function () {
     $lines = [
         'User-agent: *',
         '',
         'Allow: /$',
+        'Allow: /guide',
         '',
         '# Sign-in forms: no search result should lead to one.',
         'Disallow: /login',
@@ -72,6 +95,11 @@ Route::get('sitemap.xml', function () {
         '        <loc>'.e(url('/')).'</loc>',
         '        <changefreq>monthly</changefreq>',
         '        <priority>1.0</priority>',
+        '    </url>',
+        '    <url>',
+        '        <loc>'.e(url('/guide')).'</loc>',
+        '        <changefreq>monthly</changefreq>',
+        '        <priority>0.8</priority>',
         '    </url>',
         '</urlset>',
         '',

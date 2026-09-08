@@ -284,7 +284,12 @@ class PublicSurfaceTest extends TestCase
         $this->assertStringContainsString('Sitemap: '.url('/sitemap.xml'), $body);
     }
 
-    public function test_the_sitemap_is_valid_and_lists_the_public_page(): void
+    /**
+     * Asserted by fetching every URL it lists rather than by counting them: a
+     * count has to be edited whenever a page is added, which teaches nobody
+     * anything, while a sitemap advertising a page that 404s is a real defect.
+     */
+    public function test_every_url_in_the_sitemap_is_a_page_that_loads(): void
     {
         $body = $this->get('/sitemap.xml')
             ->assertOk()
@@ -294,8 +299,31 @@ class PublicSurfaceTest extends TestCase
         $xml = simplexml_load_string($body);
 
         $this->assertNotFalse($xml, 'The sitemap must be parseable XML.');
-        $this->assertCount(1, $xml->url);
-        $this->assertSame(url('/'), (string) $xml->url[0]->loc);
+        $this->assertGreaterThan(0, count($xml->url));
+
+        $listed = [];
+
+        foreach ($xml->url as $url) {
+            $loc = (string) $url->loc;
+            $path = parse_url($loc, PHP_URL_PATH) ?: '/';
+            $listed[] = $path;
+
+            $this->assertStringStartsWith(url('/'), $loc,
+                "The sitemap must list absolute URLs on this install: {$loc}");
+
+            $this->get($path)->assertOk("The sitemap lists {$path}, which does not load.");
+        }
+
+        $this->assertContains('/', $listed, 'The landing page must be listed.');
+    }
+
+    /** The user guide is a real page, served without a login. */
+    public function test_the_guide_is_public_and_renders(): void
+    {
+        $this->get('/guide')
+            ->assertOk()
+            ->assertSee('Platform kaise chalayen')
+            ->assertSee('Plan comparison');
     }
 
     /** A sitemap that disagreed with robots.txt would be worse than none. */

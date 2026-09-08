@@ -90,6 +90,16 @@
                 </a>
             @endif
 
+            {{-- Opens in a new tab: somebody reaching for the guide is usually
+                 stuck half-way through something, and losing that page to read
+                 about it would be the wrong trade. --}}
+            @if (\Illuminate\Support\Facades\Route::has('guide'))
+                <a href="{{ route('guide') }}" target="_blank" rel="noopener"
+                   class="block px-4 py-2 text-sm text-ink-700 hover:bg-ink-50">
+                    Guide &amp; help
+                </a>
+            @endif
+
             <form method="POST" action="{{ route('logout') }}" class="border-t border-ink-100">
                 @csrf
                 <button type="submit" class="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50">

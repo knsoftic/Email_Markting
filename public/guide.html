@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="ur-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KN Softic Chalane Ka Tareeqa</title>
+<meta name="description" content="KN Softic email platform ka mukammal guide - contacts, campaigns, inbox aur automations, har plan ke hisab se.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+:root {
+    --ground: #fbfbfd;
+    --surface: #ffffff;
+    --surface-2: #f4f5fa;
+    --ink: #101426;
+    --ink-2: #2c3450;
+    --muted: #59617a;
+    --line: #e4e7f0;
+    --line-2: #d3d8e6;
+
+    --brand: #1d4ed8;
+    --brand-soft: #eaefff;
+
+    --starter: #0f766e;
+    --starter-soft: #e2f4f1;
+    --business: #1d4ed8;
+    --business-soft: #eaefff;
+    --pro: #7c3aed;
+    --pro-soft: #f2ebff;
+
+    --warn: #b45309;
+    --warn-soft: #fdf3e3;
+
+    --shadow: 0 1px 2px rgba(16,20,38,.05), 0 8px 24px rgba(16,20,38,.06);
+
+    --display: "Newsreader", Georgia, "Times New Roman", serif;
+    --body: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+:root:not([data-theme="light"]) {
+        --ground: #0c0e15;
+        --surface: #12151f;
+        --surface-2: #171b28;
+        --ink: #e9ebf3;
+        --ink-2: #c3c8db;
+        --muted: #8f97b0;
+        --line: #232838;
+        --line-2: #2f3548;
+
+        --brand: #7d9bff;
+        --brand-soft: #1a2340;
+
+        --starter: #4ecdc0;
+        --starter-soft: #13302c;
+        --business: #7d9bff;
+        --business-soft: #1a2340;
+        --pro: #b38bff;
+        --pro-soft: #251a3d;
+
+        --warn: #e0a24a;
+        --warn-soft: #33260f;
+
+        --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+}
+
+:root[data-theme="dark"] {
+    --ground: #0c0e15;
+    --surface: #12151f;
+    --surface-2: #171b28;
+    --ink: #e9ebf3;
+    --ink-2: #c3c8db;
+    --muted: #8f97b0;
+    --line: #232838;
+    --line-2: #2f3548;
+
+    --brand: #7d9bff;
+    --brand-soft: #1a2340;
+
+    --starter: #4ecdc0;
+    --starter-soft: #13302c;
+    --business: #7d9bff;
+    --business-soft: #1a2340;
+    --pro: #b38bff;
+    --pro-soft: #251a3d;
+
+    --warn: #e0a24a;
+    --warn-soft: #33260f;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.5rem 6rem;
+}
+
+/* ------------------------------------------------------------- masthead */
+
+.masthead {
+    padding: 3.5rem 0 2.5rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2.5rem;
+}
+
+.brand-row {
+    display: flex;
+    align-items: center;
+    gap: .625rem;
+    margin-bottom: 1.75rem;
+}
+
+.mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem; height: 2rem;
+    border-radius: 8px;
+    background: var(--brand);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+}
+
+.brand-row span {
+    font-weight: 600;
+    letter-spacing: -.01em;
+}
+
+h1 {
+    font-family: var(--display);
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -.02em;
+    margin: 0 0 .875rem;
+    text-wrap: balance;
+}
+
+.standfirst {
+    font-size: 1.0625rem;
+    color: var(--muted);
+    max-width: 60ch;
+    margin: 0 0 2rem;
+}
+
+.plan-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+/* ---------------------------------------------------------------- chips */
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    padding: .3125rem .6875rem;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .02em;
+    white-space: nowrap;
+}
+
+.chip::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.chip-starter  { background: var(--starter-soft);  color: var(--starter); }
+.chip-business { background: var(--business-soft); color: var(--business); }
+.chip-pro      { background: var(--pro-soft);      color: var(--pro); }
+
+/* --------------------------------------------------------------- layout */
+
+.columns {
+    display: grid;
+    gap: 3rem;
+}
+
+@media (min-width: 1040px) {
+    .columns { grid-template-columns: 200px minmax(0, 1fr); }
+}
+
+/* ------------------------------------------------------------------ toc */
+
+.toc { align-self: start; }
+
+@media (min-width: 1040px) {
+    .toc {
+        position: sticky;
+        top: 2rem;
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+}
+
+.toc h2 {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 .875rem;
+}
+
+.toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .0625rem;
+}
+
+.toc a {
+    display: block;
+    padding: .3125rem .5rem;
+    border-radius: 6px;
+    font-size: .875rem;
+    color: var(--muted);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+}
+
+.toc a:hover { color: var(--ink); background: var(--surface-2); }
+.toc a:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+
+/* -------------------------------------------------------------- content */
+
+section { scroll-margin-top: 1.5rem; }
+
+section + section {
+    margin-top: 3.5rem;
+    padding-top: 3.5rem;
+    border-top: 1px solid var(--line);
+}
+
+h2.section-title {
+    font-family: var(--display);
+    font-size: 1.75rem;
+    font-weight: 500;
+    letter-spacing: -.015em;
+    line-height: 1.25;
+    margin: 0 0 .5rem;
+    text-wrap: balance;
+}
+
+h3 {
+    font-family: var(--body);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -.005em;
+    margin: 2rem 0 .5rem;
+}
+
+.avail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .375rem;
+    margin: 0 0 1.25rem;
+}
+
+p { margin: 0 0 1rem; max-width: 68ch; }
+
+a { color: var(--brand); }
+
+strong { font-weight: 600; color: var(--ink); }
+
+code {
+    font-family: var(--mono);
+    font-size: .8125em;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: .0625rem .3125rem;
+}
+
+/* --------------------------------------------------------------- steps */
+
+ol.steps {
+    counter-reset: step;
+    list-style: none;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .625rem;
+    max-width: 68ch;
+}
+
+ol.steps > li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 2.125rem;
+}
+
+ol.steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: .1875rem;
+    width: 1.5rem; height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--line-2);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+}
+
+ul.plain {
+    margin: 0 0 1.5rem;
+    padding-left: 1.125rem;
+    max-width: 68ch;
+}
+
+ul.plain li { margin-bottom: .375rem; }
+
+/* --------------------------------------------------------------- figure */
+
+figure {
+    margin: 1.75rem 0 0;
+}
+
+figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line-2);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    background: var(--surface);
+}
+
+figcaption {
+    margin-top: .625rem;
+    font-size: .8125rem;
+    color: var(--muted);
+    max-width: 68ch;
+}
+
+/* ----------------------------------------------------------------- note */
+
+.note {
+    display: flex;
+    gap: .75rem;
+    padding: .875rem 1rem;
+    border-radius: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    margin: 0 0 1.5rem;
+    max-width: 68ch;
+    font-size: .9375rem;
+}
+
+.note .tag {
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-top: .25rem;
+}
+
+.note p { margin: 0; }
+.note p + p { margin-top: .5rem; }
+
+.note-warn {
+    background: var(--warn-soft);
+    border-color: color-mix(in srgb, var(--warn) 25%, transparent);
+}
+
+.note-warn .tag { color: var(--warn); }
+
+/* ---------------------------------------------------------------- table */
+
+.table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .875rem;
+    min-width: 560px;
+}
+
+th, td {
+    padding: .625rem .875rem;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+}
+
+thead th {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface-2);
+    white-space: nowrap;
+}
+
+tbody tr:last-child td { border-bottom: 0; }
+
+td.num {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.yes { color: var(--starter); font-weight: 600; }
+.no  { color: var(--muted); }
+
+th.plan-starter  { color: var(--starter); }
+th.plan-business { color: var(--business); }
+th.plan-pro      { color: var(--pro); }
+
+/* --------------------------------------------------------------- footer */
+
+.colophon {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+    font-size: .8125rem;
+    color: var(--muted);
+    max-width: 68ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+    <div class="brand-row">
+        <span class="mark">KN</span>
+        <span>KN Softic</span>
+    </div>
+
+    <h1>Platform kaise chalayen</h1>
+
+    <p class="standfirst">
+        Contacts se le kar campaign bhejne, replies parhne aur automation chalane tak — har cheez
+        step by step, asli screens ke saath. Har section par likha hai ke woh kis plan mein milta hai.
+    </p>
+
+    <div class="plan-legend">
+        <span class="chip chip-starter">Starter — free</span>
+        <span class="chip chip-business">Business — $29/mah</span>
+        <span class="chip chip-pro">Pro — $79/mah</span>
+    </div>
+</header>
+
+<div class="columns">
+
+<nav class="toc" aria-label="Sections">
+    <h2>Fehrist</h2>
+    <ol>
+        <li><a href="#shuru">Shuruaat</a></li>
+        <li><a href="#contacts">Contacts</a></li>
+        <li><a href="#import">Import</a></li>
+        <li><a href="#lists">Lists aur Tags</a></li>
+        <li><a href="#segments">Segments</a></li>
+        <li><a href="#templates">Templates</a></li>
+        <li><a href="#campaign">Campaign bhejna</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#smtp">SMTP</a></li>
+        <li><a href="#inbox">Inbox</a></li>
+        <li><a href="#replies">Campaign replies</a></li>
+        <li><a href="#automation">Automations</a></li>
+        <li><a href="#abtest">A/B testing</a></li>
+        <li><a href="#team">Team</a></li>
+        <li><a href="#dhoondna">Dhoondna</a></li>
+        <li><a href="#plans">Plan comparison</a></li>
+        <li><a href="#masail">Aam masail</a></li>
+    </ol>
+</nav>
+
+<main>
+
+<!-- ============================================================ shuruaat -->
+<section id="shuru">
+    <h2 class="section-title">Shuruaat</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter</span>
+        <span class="chip chip-business">Business</span>
+        <span class="chip chip-pro">Pro</span>
+    </div>
+
+    <p>
+        Apne account ka address kholein aur email aur password se sign in karein. Password bhool jayein
+        to <strong>Forgot password</strong> par click karein — reset link aap ke email par aata hai.
+    </p>
+
+    <figure>
+        <img src="/guide-img/01-login.webp" alt="Sign in screen" loading="lazy">
+        <figcaption>Sign in screen. "Remember me" tick karein to agli baar dobara password nahi maangega.</figcaption>
+    </figure>
+
+    <h3>Dashboard kya batata hai</h3>
+
+    <p>
+        Sign in ke baad pehla screen dashboard hai. Yahan char cheezein ek nazar mein dikhti hain:
+        kitne contacts hain, kitne campaigns bane, is mahine kitne email gaye, aur kitne aaye.
+        Neeche <strong>Monthly usage</strong> mein aap ka plan ka istemal dikhta hai — jaise
+        <code>60 / 100,000</code> contacts.
+    </p>
+
+    <div class="note">
+        <span class="tag">Note</span>
+        <p>
+            Open rate aur click rate par likha hai ke ye <em>taqreeban</em> hain. Wajah ye hai ke Gmail
+            aur baqi providers images ko apne server se load karte hain, is liye kuch opens ginay nahi
+            jate aur kuch machine ke hote hain. Platform ye chhupata nahi — screen par saaf likha hai.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/guide-img/02-dashboard.webp" alt="Dashboard" loading="lazy">
+        <figcaption>Dashboard. Upar dayen taraf plan ka naam aur renewal date likhi hoti hai.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================ contacts -->
+<section id="contacts">
+    <h2 class="section-title">Contacts add karna</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter — 2,000 tak</span>
+        <span class="chip chip-business">Business — 20,000</span>
+        <span class="chip chip-pro">Pro — 100,000</span>
+    </div>
+
+    <p>
+        Sidebar mein <strong>Subscribers</strong> khol kar <strong>Add contact</strong> par click karein.
+        Sirf email address zaroori hai; naam, company, phone aur country marzi ki baat hain — lekin
+        agar aap email mein naam likhna chahte hain to first name zaroor bharein.
+    </p>
+
+    <ol class="steps">
+        <li>Email address likhein.</li>
+        <li>Naam bharein taake email mein <code>{{first_name}}</code> kaam kare.</li>
+        <li>Dayen taraf <strong>Status</strong> chunein — normally <em>Active</em>.</li>
+        <li><strong>Lists</strong> mein tick karein ke ye contact kis list mein jayega.</li>
+        <li><strong>Save</strong>.</li>
+    </ol>
+
+    <div class="note note-warn">
+        <span class="tag">Zaroori</span>
+        <p>
+            Jo address pehle unsubscribe kar chuka ho, usay dobara add karne par bhi woh
+            <strong>Active nahi banta</strong>. Ye jaan boojh kar hai: kisi ka opt-out sirf usay dobara
+            import kar ke wapas nahi liya ja sakta. Aisa contact "Unsubscribed" hi rahega.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/guide-img/04-contact-new.webp" alt="New contact form" loading="lazy">
+        <figcaption>Naya contact. Dayen taraf status, consent, lists aur tags ek saath set ho jate hain.</figcaption>
+    </figure>
+
+    <figure>
+        <img src="/guide-img/03-contacts.webp" alt="Contacts list" loading="lazy">
+        <figcaption>Contacts ki list. Upar search aur filters se status, list ya tag ke hisab se chhaan sakte hain.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================== import -->
+<section id="import">
+    <h2 class="section-title">CSV se import</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter</span>
+        <span class="chip chip-business">Business</span>
+        <span class="chip chip-pro">Pro</span>
+    </div>
+
+    <p>
+        Ek ek kar ke add karne ke bajaye CSV file upload karein. <strong>Import</strong> kholein,
+        file chunein, phir batayein ke aap ki file ka kaun sa column platform ke kis field se milta hai.
+    </p>
+
+    <ol class="steps">
+        <li>CSV upload karein — 50 MB tak.</li>
+        <li>Columns match karein: aap ka "Email" hamare <code>email</code> se, waghera.</li>
+        <li>Chunein ke jo contact pehle se mojood ho us ka kya karna hai — <strong>skip</strong> ya <strong>update</strong>.</li>
+        <li>Lists aur tags chunein jo sab ko lag jayen.</li>
+        <li><strong>Start import</strong>. Bara file background mein chalti rahegi; aap doosre kaam kar sakte hain.</li>
+    </ol>
+
+    <p>
+        Import ke baad screen batati hai ke kitne naye aaye, kitne pehle se thay, kitne invalid thay
+        aur kitne do-not-send list par honay ki wajah se rok diye gaye. Jo rows theek nahi thin unhein
+        alag CSV mein download kar sakte hain — theek kar ke dobara upload karein.
+    </p>
+
+    <figure>
+        <img src="/guide-img/05-import.webp" alt="Import screen" loading="lazy">
+        <figcaption>Import. File upload karne ke baad column mapping ka step aata hai.</figcaption>
+    </figure>
+</section>
+
+<!-- =============================================================== lists -->
+<section id="lists">
+    <h2 class="section-title">Lists aur Tags</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter — 5 lists</span>
+        <span class="chip chip-business">Business — 50</span>
+        <span class="chip chip-pro">Pro — bay-hisab</span>
+    </div>
+
+    <p>
+        <strong>List</strong> woh hai jis ke liye log sign up karte hain — "Newsletter", "Customers".
+        Campaign list ko bheja jata hai. <strong>Tag</strong> sirf aap ki nishani hai — "VIP",
+        "Karachi", "2026 mein khareeda". Ek contact kai lists aur kai tags mein ho sakta hai.
+    </p>
+
+    <p>
+        Farq yaad rakhne ka aasan tareeqa: <em>list se log khud judte hain, tag aap lagate hain.</em>
+        Unsubscribe list se hota hai, tag se nahi.
+    </p>
+
+    <figure>
+        <img src="/guide-img/06-lists.webp" alt="Lists screen" loading="lazy">
+        <figcaption>Har list ke saamne kitne active contacts hain, ye ginti khud update hoti rehti hai.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================ segments -->
+<section id="segments">
+    <h2 class="section-title">Segments</h2>
+    <div class="avail">
+        <span class="chip chip-business">Business</span>
+        <span class="chip chip-pro">Pro</span>
+    </div>
+
+    <div class="note note-warn">
+        <span class="tag">Plan</span>
+        <p>Starter par ye feature nahi hai. Business ya Pro par upgrade karne se khul jata hai.</p>
+    </div>
+
+    <p>
+        Segment ek <strong>khud chalne wali list</strong> hai. Aap shart likhte hain, aur jo bhi contact
+        us shart par poora utarta hai woh khud us mein aa jata hai — aur na utray to nikal jata hai.
+        Jaise: "woh log jinhon ne pichla campaign khola magar click nahi kiya".
+    </p>
+
+    <ol class="steps">
+        <li><strong>Segments → Create segment</strong>.</li>
+        <li>Naam dein, phir shartein add karein — status, list, tag, city, ya campaign ka amal.</li>
+        <li>Chunein ke <strong>saari</strong> shartein poori hon ya <strong>koi ek</strong>.</li>
+        <li>Save se pehle screen batati hai ke abhi kitne contacts is mein aate hain.</li>
+    </ol>
+
+    <figure>
+        <img src="/guide-img/07-segments.webp" alt="Segments" loading="lazy">
+        <figcaption>Segment banate waqt ginti live dikhti hai, to bhejne se pehle andaza ho jata hai.</figcaption>
+    </figure>
+</section>
+
+<!-- =========================================================== templates -->
+<section id="templates">
+    <h2 class="section-title">Templates</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter — 10</span>
+        <span class="chip chip-business">Business — 100</span>
+        <span class="chip chip-pro">Pro — bay-hisab</span>
+    </div>
+
+    <p>
+        Platform ke saath <strong>10 tayar templates</strong> aate hain. Inhein waise hi bhej sakte hain
+        ya apni design bana kar save kar lein taake har baar dobara na banani parhe.
+    </p>
+
+    <p>
+        Design blocks se banti hai: heading, text, image, button, divider, columns, social links aur
+        footer. Har block ko click kar ke uska text, rang aur spacing badla ja sakta hai.
+    </p>
+
+    <div class="note">
+        <span class="tag">Note</span>
+        <p>
+            <strong>Footer block</strong> hatana mat. Usi mein unsubscribe link hota hai, aur uske baghair
+            campaign bheja hi nahi ja sakta — platform saaf mana kar deta hai. Ye qanoon ki baat bhi hai
+            aur aap ke domain ki reputation ki bhi.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/guide-img/08-templates.webp" alt="Templates gallery" loading="lazy">
+        <figcaption>Templates gallery. System templates par taala hota hai — unhein badalna ho to pehle duplicate karein.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================ campaign -->
+<section id="campaign">
+    <h2 class="section-title">Campaign banana aur bhejna</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter — 10/mah</span>
+        <span class="chip chip-business">Business — 100/mah</span>
+        <span class="chip chip-pro">Pro — bay-hisab</span>
+    </div>
+
+    <p>
+        <strong>Create Campaign</strong> par click karein. Screen char hisson mein bata hua hai —
+        Basics, Audience, Sending aur Template. Jab tak aap khud send na dabayen, kuch nahi jata;
+        beech mein <strong>Save draft</strong> kar ke chhor sakte hain.
+    </p>
+
+    <ol class="steps">
+        <li><strong>Basics</strong> — campaign ka naam (sirf aap dekhte hain), subject line, preview text, aur "from" naam aur address.</li>
+        <li><strong>Audience</strong> — list ya segment chunein. Screen batati hai ke kitne logon tak jayega.</li>
+        <li><strong>Template</strong> — tayar template chunein ya blocks se apni design banayein.</li>
+        <li><strong>Sending</strong> — abhi bhejein ya date aur waqt chunein.</li>
+        <li>Bhejne se pehle <strong>test email</strong> apne aap ko bhej kar dekh lein.</li>
+    </ol>
+
+    <div class="note note-warn">
+        <span class="tag">Zaroori</span>
+        <p>
+            "From address" aisi honi chahiye jis ka domain aap ke paas ho aur jis se bhejne ki ijazat
+            aap ne SMTP provider ko di ho. Ghair-mutabiq address spam folder mein jane ka sab se tez
+            raasta hai.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/guide-img/10-campaign-new.webp" alt="New campaign" loading="lazy">
+        <figcaption>Naya campaign. Upar peeli patti woh cheezein batati hai jo bhejne se pehle theek karni hain — yahan footer block missing hai.</figcaption>
+    </figure>
+
+    <h3>Bhejne ke baad</h3>
+
+    <p>
+        Bara campaign ek saath nahi jata — thore thore kar ke jata hai, taake provider ki had par na
+        lagey. <strong>All Campaigns</strong> mein progress dikhti rehti hai, aur beech mein
+        <strong>Pause</strong> bhi kar sakte hain.
+    </p>
+
+    <figure>
+        <img src="/guide-img/09-campaigns.webp" alt="Campaigns list" loading="lazy">
+        <figcaption>Campaigns. Har row par status aur ab tak kitne gaye, ye dikhta hai.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================= results -->
+<section id="results">
+    <h2 class="section-title">Results dekhna</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter — buniyadi</span>
+        <span class="chip chip-business">Business — tafseeli</span>
+        <span class="chip chip-pro">Pro — tafseeli</span>
+    </div>
+
+    <p>
+        <strong>Analytics</strong> mein har campaign ki report hai: kitne gaye, kitne khulay, kitne
+        clicks huay, kitne bounce huay aur kitnon ne unsubscribe kiya. Kaun sa link kitni baar click
+        hua, ye bhi alag se dikhta hai.
+    </p>
+
+    <p>
+        Neeche ek ek contact ki tafseel hai — kis ne khola, kis ne click kiya, kis tak pohancha hi nahi.
+        Ise CSV mein download bhi kar sakte hain.
+    </p>
+
+    <div class="note">
+        <span class="tag">Sach</span>
+        <p>
+            Open rate poora sach nahi hota, aur platform ye chhupata nahi. Apple Mail aur Gmail ki
+            privacy features kuch opens khud kar deti hain aur kuch bilkul rok deti hain. Report par
+            "machine opens" ka hissa alag likha hota hai. <strong>Clicks zyada bharosay ke laiq
+            hain</strong> — insaan hi link dabata hai.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/guide-img/16-analytics.webp" alt="Analytics" loading="lazy">
+        <figcaption>Analytics. Upar se window badal kar 7, 30 ya 90 din dekh sakte hain.</figcaption>
+    </figure>
+</section>
+
+<!-- ================================================================ smtp -->
+<section id="smtp">
+    <h2 class="section-title">SMTP — email kis raste jata hai</h2>
+    <div class="avail">
+        <span class="chip chip-business">Business — 2 accounts</span>
+        <span class="chip chip-pro">Pro — 5 + rotation</span>
+    </div>
+
+    <div class="note note-warn">
+        <span class="tag">Plan</span>
+        <p>
+            <strong>Starter par apna SMTP add nahi kar sakte.</strong> Aap ke email admin ke diye hue
+            account se jate hain — kuch karne ki zaroorat nahi, bas bhejte rahein.
+        </p>
+    </div>
+
+    <p>
+        Business aur Pro par apna SMTP account jorh sakte hain — Gmail, Zoho, Amazon SES, Mailgun,
+        ya koi bhi provider. Fayda ye ke bhejne ki had aur reputation aap ki apni hoti hai.
+    </p>
+
+    <ol class="steps">
+        <li><strong>SMTP Accounts → Add</strong>.</li>
+        <li>Host, port, username aur password bharein — provider ne jo diye hon.</li>
+        <li>Ghanta, din aur mahine ki had likhein taake provider ki limit se aage na barhein.</li>
+        <li><strong>Test</strong> dabayein. Ye asli connection banata hai — pass ho to hi save karein.</li>
+    </ol>
+
+    <p>
+        <strong>Pro par rotation</strong> milta hai: kai accounts baari baari istemal hote hain, aur
+        agar ek jawab dena band kar de to us se bhejna khud ruk jata hai.
+    </p>
+
+    <figure>
+        <img src="/guide-img/21-smtp.webp" alt="SMTP accounts" loading="lazy">
+        <figcaption>SMTP accounts. Har card par aaj kitne email gaye aur limit kitni hai, ye dikhta hai.</figcaption>
+    </figure>
+</section>
+
+<!-- =============================================================== inbox -->
+<section id="inbox">
+    <h2 class="section-title">Inbox — jawab parhna</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter — 1 mailbox</span>
+        <span class="chip chip-business">Business — 3</span>
+        <span class="chip chip-pro">Pro — 10</span>
+    </div>
+
+    <p>
+        Ye platform sirf bhejta nahi, aap ka mailbox bhi jorhta hai. IMAP se connect karein aur
+        jawab yahin parh lein — alag email app kholne ki zaroorat nahi.
+    </p>
+
+    <ol class="steps">
+        <li><strong>Mailboxes → Add mailbox</strong>.</li>
+        <li>IMAP host, port (aam tor par 993), username aur password dein.</li>
+        <li><strong>Test connection</strong> — kaamyab ho to save karein.</li>
+        <li>Pehla sync khud shuru ho jata hai; uske baad har chand minute baad naye email aate rehte hain.</li>
+    </ol>
+
+    <div class="note">
+        <span class="tag">Note</span>
+        <p>
+            Gmail ya Outlook par aam password kaam nahi karega — <strong>app password</strong> banana
+            parhta hai. Agar connection fail ho to mailbox card par wajah saaf likhi hoti hai, sirf
+            "failed" nahi.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/guide-img/11-mailboxes.webp" alt="Mailboxes" loading="lazy">
+        <figcaption>Mailboxes. Har card batata hai ke aakhri sync kab hua aur agla kab hoga.</figcaption>
+    </figure>
+
+    <figure>
+        <img src="/guide-img/12-inbox.webp" alt="Inbox" loading="lazy">
+        <figcaption>Inbox. Bahar ki images jaan boojh kar rok di jati hain — woh aksar tracking pixels hoti hain. Zaroorat ho to "show images" dabayein.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================= replies -->
+<section id="replies">
+    <h2 class="section-title">Campaign replies</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter</span>
+        <span class="chip chip-business">Business</span>
+        <span class="chip chip-pro">Pro</span>
+    </div>
+
+    <p>
+        Jab koi aap ke campaign ka jawab deta hai, platform us jawab ko usi campaign se jorh deta hai.
+        <strong>Campaign Replies</strong> mein saari guftagu ek jagah hoti hai — kis ne kya kaha aur
+        kis email ke jawab mein.
+    </p>
+
+    <p>
+        Har guftagu ki ek halat hoti hai: <strong>New</strong>, <strong>Read</strong>,
+        <strong>Replied</strong>, <strong>Closed</strong>. Inbox se jawab dein to woh khud
+        "Replied" ho jati hai; woh dobara likhein to khud wapas "New" ho jati hai.
+    </p>
+
+    <div class="note">
+        <span class="tag">Sach</span>
+        <p>
+            Zyada tar jawab email ke headers se pehchane jate hain, jo bilkul theek hota hai. Kabhi
+            headers na hon to platform address aur subject se andaza lagata hai — aur ye andaza kabhi
+            ghalat bhi ho sakta hai. Is liye har guftagu par <strong>"unlink from campaign"</strong>
+            ka option hota hai, aur unlink karne par ginti bhi wapas theek ho jati hai.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/guide-img/13-replies.webp" alt="Campaign replies" loading="lazy">
+        <figcaption>Replies queue. Naye jawab sab se upar rehte hain.</figcaption>
+    </figure>
+</section>
+
+<!-- ========================================================== automation -->
+<section id="automation">
+    <h2 class="section-title">Automations</h2>
+    <div class="avail">
+        <span class="chip chip-business">Business — 5</span>
+        <span class="chip chip-pro">Pro — 50</span>
+    </div>
+
+    <div class="note note-warn">
+        <span class="tag">Plan</span>
+        <p>Starter par ye feature nahi hai.</p>
+    </div>
+
+    <p>
+        Automation ka matlab: "jab ye ho, to khud ye kar do". Jaise — koi naya contact bane to usay
+        welcome email jaye, teen din baad doosra email jaye, aur agar woh pehla email khol le to usay
+        "interested" tag lag jaye.
+    </p>
+
+    <h3>Trigger — kis baat par shuru ho</h3>
+    <ul class="plain">
+        <li>Naya contact bana</li>
+        <li>Koi tag laga</li>
+        <li>Kisi list mein shamil hua</li>
+        <li>Campaign khola</li>
+        <li>Link click kiya</li>
+        <li>Campaign nahi khola (itne ghanton tak)</li>
+        <li>Ek muqarrar tareekh</li>
+    </ul>
+
+    <h3>Steps — phir kya ho</h3>
+    <ul class="plain">
+        <li>Email bhejo</li>
+        <li>Intezaar karo (minute, ghante, din ya hafte)</li>
+        <li>Shart dekho — poori ho to aage barho, warna ruk jao</li>
+        <li>Tag lagao ya hatao</li>
+        <li>List badlo</li>
+        <li>Unsubscribe kar do</li>
+    </ul>
+
+    <div class="note">
+        <span class="tag">Note</span>
+        <p>
+            Ek contact ek automation mein <strong>ek hi baar</strong> jata hai. Ye jaan boojh kar hai —
+            warna wohi shakhs teen martaba welcome email le leta. Agar aap chahte hain ke dobara bhi ja
+            sake to automation ki settings mein <strong>"allow re-entry"</strong> on karein.
+        </p>
+        <p>
+            Aur agar koi beech mein unsubscribe kar de, to baqi emails <strong>ruk jate hain</strong> —
+            sequence poora nahi hota.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/guide-img/15-automation-new.webp" alt="New automation" loading="lazy">
+        <figcaption>Nayi automation. Pehle trigger chunein, phir steps ek ek kar ke add karein.</figcaption>
+    </figure>
+
+    <figure>
+        <img src="/guide-img/14-automations.webp" alt="Automations list" loading="lazy">
+        <figcaption>Automations. Jo cheez chalne se rok rahi ho, woh row par saaf likhi hoti hai — jaise "koi step nahi hai".</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================== abtest -->
+<section id="abtest">
+    <h2 class="section-title">A/B testing</h2>
+    <div class="avail">
+        <span class="chip chip-pro">Sirf Pro</span>
+    </div>
+
+    <p>
+        Do subject lines mein se behtar kaun sa hai, ye andaze se nahi, aazma kar maloom karein.
+        Platform aap ki list ka thora hissa lay kar aadhe ko A aur aadhe ko B bhejta hai, phir
+        jo jeeta woh baqi sab ko bhejta hai.
+    </p>
+
+    <ol class="steps">
+        <li>Campaign banate waqt <strong>A/B test</strong> on karein.</li>
+        <li>Version A aur B ka subject likhein.</li>
+        <li>Chunein ke kitne hisse par test karna hai — aam tor par 20%.</li>
+        <li>Chunein ke kitni der intezaar karna hai — aam tor par 4 ghante.</li>
+        <li>Waqt poora hone par jeetne wala khud baqi list ko chala jata hai.</li>
+    </ol>
+
+    <div class="note">
+        <span class="tag">Note</span>
+        <p>
+            Test ke liye log <strong>ittefaqan</strong> chune jate hain, tarteeb se nahi. Wajah ye ke
+            list ke pehle 20% aksar sab se puranay contacts hote hain — un par test karne se pata
+            subject line ka nahi, purane logon ka chalta.
+        </p>
+    </div>
+</section>
+
+<!-- ================================================================ team -->
+<section id="team">
+    <h2 class="section-title">Team members</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter — sirf aap</span>
+        <span class="chip chip-business">Business — 5</span>
+        <span class="chip chip-pro">Pro — 20</span>
+    </div>
+
+    <p>
+        <strong>Team</strong> mein apne saathi add karein aur har ek ka role chunein. Role tay karta
+        hai ke woh kya dekh aur kar sakta hai — jaise koi campaigns bana sake magar SMTP settings na
+        chhu sake.
+    </p>
+
+    <p>
+        Apna role bhi bana sakte hain: kaun si cheezein us role mein hongi, ye tick kar ke chunein.
+    </p>
+
+    <figure>
+        <img src="/guide-img/20-team.webp" alt="Team" loading="lazy">
+        <figcaption>Team. Kisi ko hataane par uski seat foran khaali ho jati hai, to us jagah naya bulaya ja sakta hai.</figcaption>
+    </figure>
+</section>
+
+<!-- ============================================================ dhoondna -->
+<section id="dhoondna">
+    <h2 class="section-title">Dhoondna aur record dekhna</h2>
+    <div class="avail">
+        <span class="chip chip-starter">Starter</span>
+        <span class="chip chip-business">Business</span>
+        <span class="chip chip-pro">Pro</span>
+    </div>
+
+    <p>
+        Upar wale search box mein kuch bhi likhein — email address, naam, subject line — aur woh
+        contacts, campaigns, inbox messages, templates, automations, lists, tags sab mein ek saath
+        dhoondta hai. Tareekh ki had bhi laga sakte hain.
+    </p>
+
+    <div class="note">
+        <span class="tag">Sach</span>
+        <p>
+            Search email ke <strong>andar ka matn nahi parhta</strong> — sirf subject, address aur naam.
+            Screen par bhi yehi likha hai, taake kuch na milne par aap ko wajah maloom ho.
+        </p>
+    </div>
+
+    <figure>
+        <img src="/guide-img/18-search.webp" alt="Global search" loading="lazy">
+        <figcaption>Search. Natije kism ke hisab se alag alag hisson mein aate hain.</figcaption>
+    </figure>
+
+    <h3>Email log</h3>
+    <p>
+        "Falan shakhs kehta hai usay email nahi mila" — is sawal ka jawab <strong>Email Logs</strong>
+        mein hai. Har bheje gaye email ka record: kis ko gaya, kab gaya, kaamyab hua ya nahi, aur
+        nakaam hua to kya wajah thi.
+    </p>
+
+    <figure>
+        <img src="/guide-img/17-logs.webp" alt="Email logs" loading="lazy">
+        <figcaption>Email log. Status, kism aur tareekh se filter kar sakte hain, aur CSV mein nikaal sakte hain.</figcaption>
+    </figure>
+
+    <h3>Activity</h3>
+    <p>
+        <strong>Activity</strong> mein likha hota hai ke aap ke account mein kis ne kya kiya aur kab —
+        contact delete hua, campaign cancel hua, SMTP password badla. Ye record na badla ja sakta hai
+        na mitaya, isi liye qabil-e-etibaar hai.
+    </p>
+
+    <figure>
+        <img src="/guide-img/19-activity.webp" alt="Activity log" loading="lazy">
+        <figcaption>Activity. Area, banday aur tareekh se filter ho jati hai.</figcaption>
+    </figure>
+</section>
+
+<!-- =============================================================== plans -->
+<section id="plans">
+    <h2 class="section-title">Plan comparison</h2>
+
+    <p>Kaun se plan mein kya milta hai, poori tafseel:</p>
+
+    <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Cheez</th>
+                    <th class="plan-starter">Starter</th>
+                    <th class="plan-business">Business</th>
+                    <th class="plan-pro">Pro</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Qeemat / mah</td><td class="num">Free</td><td class="num">$29</td><td class="num">$79</td></tr>
+                <tr><td>Contacts</td><td class="num">2,000</td><td class="num">20,000</td><td class="num">100,000</td></tr>
+                <tr><td>Email / mah</td><td class="num">10,000</td><td class="num">100,000</td><td class="num">500,000</td></tr>
+                <tr><td>Email / din</td><td class="num">1,000</td><td class="num">10,000</td><td class="num">50,000</td></tr>
+                <tr><td>Campaigns / mah</td><td class="num">10</td><td class="num">100</td><td class="num">Bay-hisab</td></tr>
+                <tr><td>Lists</td><td class="num">5</td><td class="num">50</td><td class="num">Bay-hisab</td></tr>
+                <tr><td>Templates</td><td class="num">10</td><td class="num">100</td><td class="num">Bay-hisab</td></tr>
+                <tr><td>Mailboxes (IMAP)</td><td class="num">1</td><td class="num">3</td><td class="num">10</td></tr>
+                <tr><td>Team members</td><td class="num">1</td><td class="num">5</td><td class="num">20</td></tr>
+                <tr><td>Storage</td><td class="num">512 MB</td><td class="num">5 GB</td><td class="num">20 GB</td></tr>
+                <tr><td>Apna SMTP</td><td class="no">Nahi</td><td class="yes">Haan — 2</td><td class="yes">Haan — 5</td></tr>
+                <tr><td>SMTP rotation</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">Haan</td></tr>
+                <tr><td>Automations</td><td class="no">Nahi</td><td class="yes">5</td><td class="yes">50</td></tr>
+                <tr><td>Segments</td><td class="no">Nahi</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>Custom fields</td><td class="no">Nahi</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>A/B testing</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">Haan</td></tr>
+                <tr><td>Tafseeli analytics</td><td class="no">Nahi</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>API</td><td class="no">Nahi</td><td class="no">Nahi</td><td class="yes">Haan</td></tr>
+                <tr><td>Scheduling</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>Attachments</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+                <tr><td>Template builder</td><td class="yes">Haan</td><td class="yes">Haan</td><td class="yes">Haan</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p style="margin-top:1.25rem">
+        Had khatam hone par platform aap ko pehle se bata deta hai — kaam beech mein ruk nahi jata.
+        Upgrade karne par nayi had foran lag jati hai.
+    </p>
+</section>
+
+<!-- ============================================================== masail -->
+<section id="masail">
+    <h2 class="section-title">Aam masail</h2>
+
+    <div class="table-scroll">
+        <table>
+            <thead>
+                <tr><th>Masla</th><th>Wajah aur hal</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Campaign "Queued" par ruka hua hai</td>
+                    <td>Server par background worker band hai. Apne admin ko batayein — ye server ki setting hai, aap ke campaign mein kharabi nahi.</td>
+                </tr>
+                <tr>
+                    <td>Scheduled campaign waqt par nahi gaya</td>
+                    <td>Server ka scheduler nahi chal raha. Admin ko batayein.</td>
+                </tr>
+                <tr>
+                    <td>Inbox khali hai</td>
+                    <td>Mailbox connect nahi hua, ya sync fail ho raha hai. Mailboxes kholein — card par wajah likhi hogi.</td>
+                </tr>
+                <tr>
+                    <td>"Send" button kaam nahi kar raha</td>
+                    <td>Upar peeli patti parhein. Aksar footer block nahi hota (unsubscribe link ke baghair bheja nahi ja sakta) ya audience khali hai.</td>
+                </tr>
+                <tr>
+                    <td>Email spam mein ja rahe hain</td>
+                    <td>Apne domain par SPF, DKIM aur DMARC set karwayein, aur "from address" wahi rakhein jis domain ke aap malik hain.</td>
+                </tr>
+                <tr>
+                    <td>Contact add nahi ho raha</td>
+                    <td>Ya to plan ki had poori ho gayi, ya woh address do-not-send list par hai.</td>
+                </tr>
+                <tr>
+                    <td>Open rate bohat kam lag raha hai</td>
+                    <td>Ye aam hai. Gmail aur Apple Mail opens rok dete hain. <strong>Clicks dekhein</strong> — woh sach ke qareeb hote hain.</td>
+                </tr>
+                <tr>
+                    <td>Automation chal nahi rahi</td>
+                    <td>Dekh lein ke uska status "Active" hai, us mein steps hain, aur trigger jis cheez ka intezaar kar raha hai woh mojood hai.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<footer class="colophon">
+    <p>
+        Ye guide asli screens se banai gayi hai — koi tasveer bana kar nahi lagai gayi. Screens aap ke
+        install ki branding ke mutabiq thori mukhtalif dikh sakti hain.
+    </p>
+    <p>KN Softic — Email Marketing &amp; Inbox</p>
+</footer>
+
+</main>
+</div>
+</div>
+</body>
+</html>
