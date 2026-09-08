@@ -79,6 +79,43 @@ class AccountNotifier
     }
 
     /**
+     * Tells the people running the platform, rather than the people using it.
+     *
+     * `send()` above deliberately excludes super admins — a customer's own
+     * notifications are not the operator's business. This is the other
+     * direction: a customer asking to change plan is nobody's business but the
+     * operator's, and there is no other route to them, because a super admin
+     * belongs to no account.
+     *
+     * Failures are swallowed for the same reason as `send()`: an unsent
+     * notification must never break the action it was reporting on.
+     */
+    public static function sendToSuperAdmins(AccountNotification $notification): int
+    {
+        try {
+            $admins = User::query()
+                ->where('is_super_admin', true)
+                ->where('status', 'active')
+                ->get();
+
+            if ($admins->isEmpty()) {
+                return 0;
+            }
+
+            Notifier::send($admins, $notification);
+
+            return $admins->count();
+        } catch (Throwable $e) {
+            Log::warning('Super admin notification could not be sent', [
+                'notification' => $notification::class,
+                'error' => $e->getMessage(),
+            ]);
+
+            return 0;
+        }
+    }
+
+    /**
      * The account's users who should see a notification needing $permission.
      *
      * Roles and the account are loaded once and attached by hand rather than

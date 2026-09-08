@@ -153,6 +153,28 @@ Route::middleware(['auth', 'verified', 'account.active'])->group(function () {
     // Inbox & composer (Phase 8) ---------------------------------------
     Route::middleware('has.account')->group(base_path('routes/inbox.php'));
 
+    /*
+    | Plan & billing
+    |--------------------------------------------------------------------------
+    | The customer's half of a manual billing process. This product takes no
+    | payments; the operator assigns the plan by hand once money has arrived.
+    | Until this existed the customer could see "upgrade your plan" and had no
+    | way to learn what the plans were, what they cost, how to pay, or how to
+    | ask — the topbar has always carried a Route::has('billing.index') guard
+    | waiting for it.
+    |
+    | Gated on settings.view, like the activity screen: what an account pays and
+    | how is account administration, not something every staff member needs.
+    */
+    Route::middleware(['has.account', 'permission:settings.view'])->group(function () {
+        Route::get('billing', [\App\Http\Controllers\BillingController::class, 'index'])
+            ->name('billing.index');
+
+        Route::post('billing/request', [\App\Http\Controllers\BillingController::class, 'requestUpgrade'])
+            ->middleware('throttle:6,1')
+            ->name('billing.request');
+    });
+
     // The account's own audit trail (Phase 11.5) -------------------------
     // Gated on settings.view: this shows what every member of the account did,
     // which is account administration rather than a module's own data.
